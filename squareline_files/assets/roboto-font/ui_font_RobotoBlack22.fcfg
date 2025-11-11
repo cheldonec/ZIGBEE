@@ -1,0 +1,16 @@
+{
+  "codename": "RobotoBlack22",
+  "ttf_path": "/assets/roboto-font/RobotoBlack-Powx.ttf",
+  "bin_path": "/assets/roboto-font\\ui_font_RobotoBlack22.bin",
+  "c_path": "/assets/roboto-font\\ui_font_RobotoBlack22.c",
+  "cfg_path": "/assets/roboto-font\\ui_font_RobotoBlack22.fcfg",
+  "size": 22,
+  "bpp": 1,
+  "letters": 0,
+  "ranges": [
+    "0x20-0x7f"
+  ],
+  "symbols": "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧЬЪШЩЫЭЮЯабвгдеёжзийклмнопрстуфхцчшщьъыэюя",
+  "customparams": "--no-compress --no-prefilter",
+  "uploaded": false
+}

@@ -1,0 +1,16 @@
+{
+  "codename": "RobotoCyrTitles",
+  "ttf_path": "/assets/roboto-font/RobotoBold-Xdoj.ttf",
+  "bin_path": "/assets/roboto-font\\ui_font_RobotoCyrTitles.bin",
+  "c_path": "/assets/roboto-font\\ui_font_RobotoCyrTitles.c",
+  "cfg_path": "/assets/roboto-font\\ui_font_RobotoCyrTitles.fcfg",
+  "size": 16,
+  "bpp": 4,
+  "letters": 0,
+  "ranges": [
+    "0x20-0x7f"
+  ],
+  "symbols": "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧЬЪШЩЫЭЮЯабвгдеёжзийклмнопрстуфхцчшщьъыэюя",
+  "customparams": "--no-compress --no-prefilter",
+  "uploaded": false
+}

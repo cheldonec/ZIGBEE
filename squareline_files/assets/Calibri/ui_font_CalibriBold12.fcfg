@@ -1,0 +1,16 @@
+{
+  "codename": "CalibriBold12",
+  "ttf_path": "/assets/Calibri/calibri_bold.ttf",
+  "bin_path": "/assets/Calibri\\ui_font_CalibriBold12.bin",
+  "c_path": "/assets/Calibri\\ui_font_CalibriBold12.c",
+  "cfg_path": "/assets/Calibri\\ui_font_CalibriBold12.fcfg",
+  "size": 12,
+  "bpp": 4,
+  "letters": 0,
+  "ranges": [
+    "0x20-0x7f"
+  ],
+  "symbols": "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧЬЪШЩЫЭЮЯабвгдеёжзийклмнопрстуфхцчшщьъыэюя",
+  "customparams": "--no-compress --no-prefilter",
+  "uploaded": false
+}

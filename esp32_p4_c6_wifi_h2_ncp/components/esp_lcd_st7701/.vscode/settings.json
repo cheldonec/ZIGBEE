@@ -1,0 +1,5 @@
+{
+    "idf.openOcdConfigs": [
+        "board/esp32p4-ftdi.cfg"
+    ]
+}

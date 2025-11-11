@@ -1,0 +1,254 @@
+menu "USER_PROJECT_OPTIONS_DISPLAY_AND_TOUCH"
+    
+    choice LCD_CONNECTION_SPI_I2C
+        prompt "Configure lcd connection"
+        default LCD_CONNECTION_SPI
+        config LCD_CONNECTION_SPI
+            bool "lcd_connection_via_spi"
+            help
+                LCD via SPI.
+           
+        config LCD_CONNECTION_I2C
+            bool "lcd_connection_via_i2c"
+            help
+                LCD via I2C
+        config LCD_CONNECTION_MIPI_DSI
+            bool "lcd_connection_via_mipi_dsi"
+            help
+                LCD via MIPI_DSI
+
+    endchoice
+
+    choice
+        prompt "Select MIPI LCD model"
+        depends on LCD_CONNECTION_MIPI_DSI
+        default LCD_USE_ILI9881C
+        help
+            Select LCD controller model.
+
+        config LCD_USE_EK79007
+            bool "EK79007"
+        config LCD_USE_ILI9881C
+            bool "ILI9881C"
+    endchoice
+
+    config MIPI_DSI_USE_DMA2D_COPY_FRAME
+        depends on LCD_CONNECTION_MIPI_DSI
+        bool "Use DMA2D to copy draw buffer to frame buffer"
+        default y
+        help
+            Enable this option, DMA2D will be used to copy the LVGL draw buffer to the target frame buffer.
+            This can save some CPU time and improve the performance.
+
+    config MIPI_DSI_MONITOR_REFRESH_BY_GPIO
+        depends on LCD_CONNECTION_MIPI_DSI
+        bool "Monitor Refresh Rate by GPIO"
+        default y
+        help
+            Enable this option, you can visualize the refresh rate by attaching a logic analyzer to a specific GPIO.
+            The GPIO will output a square wave with the frequency equals to half of the refresh rate.
+
+    menu "Board Support Package(ESP32-P4)"
+
+    config BSP_ERROR_CHECK
+        bool "Enable error check in BSP"
+        default y
+        help
+            Error check assert the application before returning the error code.
+            
+    menu "I2C"
+        config BSP_I2C_NUM
+            int "I2C peripheral index"
+            default 1
+            range 0 1
+            help
+                ESP32P4 has two I2C peripherals, pick the one you want to use.
+
+        config BSP_I2C_FAST_MODE
+            bool "Enable I2C fast mode"
+            default y
+            help
+                I2C has two speed modes: normal (100kHz) and fast (400kHz).
+
+        config BSP_I2C_CLK_SPEED_HZ
+            int
+            default 400000 if BSP_I2C_FAST_MODE
+            default 100000
+    endmenu
+
+    menu "I2S"
+        config BSP_I2S_NUM
+            int "I2S peripheral index"
+            default 1
+            range 0 2
+            help
+                ESP32P4 has three I2S peripherals, pick the one you want to use.
+    endmenu
+
+    menu "uSD card - Virtual File System"
+        config BSP_SD_FORMAT_ON_MOUNT_FAIL
+            bool "Format uSD card if mounting fails"
+            default n
+            help
+                The SDMMC host will format (FAT) the uSD card if it fails to mount the filesystem.
+
+        config BSP_SD_MOUNT_POINT
+            string "uSD card mount point"
+            default "/sdcard"
+            help
+                Mount point of the uSD card in the Virtual File System
+
+    endmenu
+
+    menu "SPIFFS - Virtual File System"
+        config BSP_SPIFFS_FORMAT_ON_MOUNT_FAIL
+            bool "Format SPIFFS if mounting fails"
+            default n
+            help
+                Format SPIFFS if it fails to mount the filesystem.
+
+        config BSP_SPIFFS_MOUNT_POINT
+            string "SPIFFS mount point"
+            default "/spiffs"
+            help
+                Mount point of SPIFFS in the Virtual File System.
+
+        config BSP_SPIFFS_PARTITION_LABEL
+            string "Partition label of SPIFFS"
+            default "storage"
+            help
+                Partition label which stores SPIFFS.
+
+        config BSP_SPIFFS_MAX_FILES
+            int "Max files supported for SPIFFS VFS"
+            default 5
+            help
+                Supported max files for SPIFFS in the Virtual File System.
+    endmenu
+
+    menu "Display"
+        config BSP_LCD_DPI_BUFFER_NUMS
+            int "Set number of frame buffers"
+            default 1
+            range 1 3
+            help
+                Let DPI LCD driver create a specified number of frame-size buffers. Only when it is set to multiple can the avoiding tearing be turned on.
+
+        config BSP_DISPLAY_LVGL_AVOID_TEAR
+            bool "Avoid tearing effect"
+            depends on BSP_LCD_DPI_BUFFER_NUMS > 1
+            default "n"
+            help
+                Avoid tearing effect through LVGL buffer mode and double frame buffers of RGB LCD. This feature is only available for RGB LCD.
+
+        choice BSP_DISPLAY_LVGL_MODE
+            depends on BSP_DISPLAY_LVGL_AVOID_TEAR
+            prompt "Select LVGL buffer mode"
+            default BSP_DISPLAY_LVGL_FULL_REFRESH
+            config BSP_DISPLAY_LVGL_FULL_REFRESH
+                bool "Full refresh"
+            config BSP_DISPLAY_LVGL_DIRECT_MODE
+                bool "Direct mode"
+        endchoice
+            
+        config BSP_DISPLAY_BRIGHTNESS_LEDC_CH
+        int "LEDC channel index"
+        default 1
+        range 0 7
+        help
+            LEDC channel is used to generate PWM signal that controls display brightness.
+            Set LEDC index that should be used.
+
+        choice BSP_LCD_COLOR_FORMAT
+            prompt "Select LCD color format"
+            default BSP_LCD_COLOR_FORMAT_RGB565
+            help
+                Select the LCD color format RGB565/RGB888.
+
+            config BSP_LCD_COLOR_FORMAT_RGB565
+                bool "RGB565"
+            config BSP_LCD_COLOR_FORMAT_RGB888
+                bool "RGB888"
+        endchoice   
+            
+        choice BSP_LCD_TYPE
+            prompt "Select LCD type"
+            default BSP_LCD_TYPE_1024_600
+            help
+                Select the LCD.
+
+            config BSP_LCD_TYPE_1024_600
+                bool "LCD 7-inch 1024x600 - ek79007"
+            config BSP_LCD_TYPE_1280_800
+                bool "LCD 1280x800 - ili9881c"
+        endchoice           
+        
+    endmenu
+    
+endmenu
+    choice SPI_LCD_DISPLAY
+        depends on LCD_CONNECTION_SPI
+        prompt "Select display model"
+        default ST7789_LCD_H240_V320_SPI_DISPLAY
+        help
+            Select LCD controller model
+        config ST7789_LCD_H240_V320_SPI_DISPLAY
+            bool "ST7789_lcd_h240_v320_spi_display"
+            help
+            LCD controller model via SPI like on waveshare esp32-s3-touch-lcd-2 
+        config ST7789_TFT_H320_V480_SPI_DISPLAY
+            bool "ST7789_tft_h320_v480_spi_display"
+            help
+            LCD controller model via SPI TFT 3,5'' 4''
+        config ST7701_LCD_H480_V800 
+            bool "ST7789_lcd_h480_v800_display"
+    endchoice
+
+    config LCD_TOUCH_ENABLED
+        bool "Enable LCD touch"
+        default n
+        help
+            Enable this option if you wish to use display touch. You can select from touch controllers.
+
+    
+    choice TOUCH_CONNECTION_SPI_I2C
+        depends on LCD_TOUCH_ENABLED
+        prompt "Configure lcd connection"
+        default LCD_TOUCH_CONNECTION_VIA_SPI
+        config LCD_TOUCH_CONNECTION_VIA_SPI
+            bool "touch_connection_via_spi"
+            help
+                Touch via SPI.
+           
+        config LCD_TOUCH_CONNECTION_VIA_I2C
+            bool "touch_connection_via_i2c"
+            help
+                Touch via I2C
+    endchoice
+
+    choice LCD_TOUCH_CONTROLLER
+        depends on LCD_TOUCH_ENABLED
+        prompt "LCD touch controller model"
+        #depends on EXAMPLE_LCD_TOUCH_ENABLED
+        default LCD_TOUCH_CONTROLLER_CST816S_I2C
+        help
+            Select LCD touch controller model
+        config LCD_TOUCH_CONTROLLER_CST816S_I2C
+            depends on LCD_TOUCH_CONNECTION_VIA_I2C
+            bool "CST816S"
+            help
+                Touch controller STMPE610 connected via I2C.
+        config LCD_TOUCH_CONTROLLER_STMPE610_SPI
+            depends on LCD_TOUCH_CONNECTION_VIA_SPI
+            bool "STMPE610"
+            help
+                Touch controller STMPE610 connected via SPI.
+        config LCD_TOUCH_CONTROLLER_XPT2046_SPI
+            depends on LCD_TOUCH_CONNECTION_VIA_SPI
+            bool "XPT2046"
+            help
+                Touch controller XPT2046 connected via SPI.
+    endchoice
+    
+    
+endmenu

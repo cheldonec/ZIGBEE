@@ -1,0 +1,16 @@
+{
+  "codename": "RobotoMedium14",
+  "ttf_path": "/assets/roboto-font/RobotoMedium-Owv4.ttf",
+  "bin_path": "/assets/roboto-font\\ui_font_RobotoMedium14.bin",
+  "c_path": "/assets/roboto-font\\ui_font_RobotoMedium14.c",
+  "cfg_path": "/assets/roboto-font\\ui_font_RobotoMedium14.fcfg",
+  "size": 14,
+  "bpp": 4,
+  "letters": 0,
+  "ranges": [
+    "0x20-0x7f"
+  ],
+  "symbols": "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧЬЪШЩЫЭЮЯабвгдеёжзийклмнопрстуфхцчшщьъыэюя",
+  "customparams": "--no-compress --no-prefilter",
+  "uploaded": false
+}

@@ -1,0 +1,12 @@
+{
+    "uiExportFolderPath": "C:\\Users\\User\\Documents\\esp32\\ZIGBEE\\esp32_p4_and_c6_480_800_lcd\\squareline_files\\squareline_export\\ui_files",
+    "projectExportFolderPath": "C:\\Users\\User\\Documents\\esp32\\ZIGBEE\\esp32_p4_and_c6_480_800_lcd\\squareline_files\\squareline_export",
+    "drive_stdio": "-",
+    "drive_stdio_path": "",
+    "drive_posix": "-",
+    "drive_posix_path": "",
+    "drive_win32": "-",
+    "drive_win32_path": "",
+    "drive_fatfs": "-",
+    "drive_fatfs_path": ""
+}

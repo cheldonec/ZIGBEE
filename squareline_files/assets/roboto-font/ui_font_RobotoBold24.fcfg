@@ -1,0 +1,16 @@
+{
+  "codename": "RobotoBold24",
+  "ttf_path": "/assets/roboto-font/RobotoBold-Xdoj.ttf",
+  "bin_path": "/assets/roboto-font\\ui_font_RobotoBold24.bin",
+  "c_path": "/assets/roboto-font\\ui_font_RobotoBold24.c",
+  "cfg_path": "/assets/roboto-font\\ui_font_RobotoBold24.fcfg",
+  "size": 24,
+  "bpp": 4,
+  "letters": 0,
+  "ranges": [
+    "0x20-0x7f"
+  ],
+  "symbols": "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧЬЪШЩЫЭЮЯабвгдеёжзийклмнопрстуфхцчшщьъыэюя",
+  "customparams": "--no-compress --no-prefilter",
+  "uploaded": false
+}
