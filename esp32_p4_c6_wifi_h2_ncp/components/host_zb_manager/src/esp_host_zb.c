@@ -305,6 +305,33 @@ static esp_err_t zb_manager_simple_desc_resp_fn(const uint8_t *input, uint16_t i
     return ESP_OK;
 }
 
+static esp_err_t  zb_manager_active_ep_resp_fn(const uint8_t *input, uint16_t inlen)
+{
+    ESP_LOGI(TAG, "zb_manager_active_ep_resp_fn");
+    //ESP_LOG_BUFFER_HEX_LEVEL(TAG, input, inlen, ESP_LOG_INFO);
+    typedef struct {
+        esp_zb_zdp_status_t zdo_status;
+        uint8_t             ep_count;
+        esp_zb_user_cb_t    find_usr;
+        //uint8_t*            ep_id_list; 
+    } ESP_ZNSP_ZB_PACKED_STRUCT esp_zb_zdo_active_ep_t;
+   
+    uint16_t outlen = inlen;// - sizeof(esp_zb_zdo_active_ep_t); // add ep_id_list
+    uint8_t *output = calloc(1, outlen);
+    if (output){
+        memcpy(output, input, outlen);
+        esp_zb_zdo_active_ep_t *zdo_active_ep = (esp_zb_zdo_active_ep_t *)output;
+        //ESP_LOGI(TAG, "status: (%d), ep_count: (%d)", zdo_active_ep->zdo_status, zdo_active_ep->ep_count);
+        if(zdo_active_ep->find_usr.user_cb){
+            esp_zb_zdo_active_ep_callback_t active_ep_cb = (esp_zb_zdo_active_ep_callback_t)zdo_active_ep->find_usr.user_cb;
+            active_ep_cb(zdo_active_ep->zdo_status, zdo_active_ep->ep_count, output + sizeof(esp_zb_zdo_active_ep_t), (void*)zdo_active_ep->find_usr.user_ctx);
+        }
+    free(output);
+    output = NULL;
+    }
+    return ESP_OK;
+}
+
 static const esp_host_zb_func_t host_zb_func_table[] = {
     {ESP_NCP_NETWORK_FORMNETWORK, esp_host_zb_form_network_fn},
     {ESP_NCP_NETWORK_JOINNETWORK, esp_host_zb_joining_network_fn},
@@ -319,6 +346,7 @@ static const esp_host_zb_func_t host_zb_func_table[] = {
     {ZB_MANAGER_DEV_ASSOCIATED_EVENT, zb_manager_dev_assoc_event_fn},
     {ZB_MANAGER_DEV_UPDATE_EVENT, zb_manager_dev_update_event_fn},
     {ZB_MANAGER_DEV_AUTH_EVENT, zb_manager_dev_auth_event_fn},
+    {ZB_MANAGER_ACTIVE_EP_RESP, zb_manager_active_ep_resp_fn},
     {ZB_MANAGER_SIMPLE_DESC_RESP, zb_manager_simple_desc_resp_fn},
 };
 

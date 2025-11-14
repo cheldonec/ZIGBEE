@@ -39,15 +39,6 @@ lv_obj_t * ui_Image33 = NULL;
 lv_obj_t * ui_Label39 = NULL;
 lv_obj_t * ui_RoomsScreenMainPanel = NULL;
 lv_obj_t * ui_RoomsScreenRoomsContainer = NULL;
-lv_obj_t * ui_Button6 = NULL;
-lv_obj_t * ui_Image35 = NULL;
-lv_obj_t * ui_Label42 = NULL;
-lv_obj_t * ui_Button7 = NULL;
-lv_obj_t * ui_Image36 = NULL;
-lv_obj_t * ui_Label43 = NULL;
-lv_obj_t * ui_Button33 = NULL;
-lv_obj_t * ui_Image37 = NULL;
-lv_obj_t * ui_Label44 = NULL;
 lv_obj_t * ui_RoomsScreenAddRoomBtn = NULL;
 lv_obj_t * ui_Image34 = NULL;
 lv_obj_t * ui_Label41 = NULL;
@@ -365,120 +356,6 @@ void ui_RoomsScreen_screen_init(void)
     lv_obj_set_style_border_opa(ui_RoomsScreenRoomsContainer, 255, LV_PART_SCROLLBAR | LV_STATE_DEFAULT);
     lv_obj_set_style_border_width(ui_RoomsScreenRoomsContainer, 1, LV_PART_SCROLLBAR | LV_STATE_DEFAULT);
 
-    ui_Button6 = lv_button_create(ui_RoomsScreenRoomsContainer);
-    lv_obj_set_width(ui_Button6, 400);
-    lv_obj_set_height(ui_Button6, 48);
-    lv_obj_set_align(ui_Button6, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Button6, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
-    lv_obj_remove_flag(ui_Button6, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_bg_color(ui_Button6, lv_color_hex(0x2F5B7C), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_Button6, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_color(ui_Button6, lv_color_hex(0x61C6CE), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_opa(ui_Button6, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_width(ui_Button6, 1, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_side(ui_Button6, LV_BORDER_SIDE_BOTTOM, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_shadow_width(ui_Button6, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_shadow_spread(ui_Button6, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_Button6, 6, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_Button6, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_Button6, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_Button6, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_Image35 = lv_image_create(ui_Button6);
-    lv_image_set_src(ui_Image35, &ui_img_icons_kitchen_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);
-    lv_obj_set_width(ui_Image35, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Image35, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Image35, 0);
-    lv_obj_set_y(ui_Image35, 4);
-    lv_obj_remove_flag(ui_Image35, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE |
-                       LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-
-    ui_Label42 = lv_label_create(ui_Button6);
-    lv_obj_set_width(ui_Label42, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Label42, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Label42, 48);
-    lv_obj_set_y(ui_Label42, 12);
-    lv_label_set_text(ui_Label42, "кухня");
-    lv_obj_set_style_text_color(ui_Label42, lv_color_hex(0x61C6CE), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_Label42, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(ui_Label42, &ui_font_RobotoBold16, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_Button7 = lv_button_create(ui_RoomsScreenRoomsContainer);
-    lv_obj_set_width(ui_Button7, 400);
-    lv_obj_set_height(ui_Button7, 48);
-    lv_obj_set_align(ui_Button7, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Button7, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
-    lv_obj_remove_flag(ui_Button7, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_bg_color(ui_Button7, lv_color_hex(0x2F5B7C), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_Button7, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_color(ui_Button7, lv_color_hex(0x61C6CE), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_opa(ui_Button7, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_width(ui_Button7, 1, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_side(ui_Button7, LV_BORDER_SIDE_BOTTOM, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_shadow_width(ui_Button7, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_shadow_spread(ui_Button7, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_Button7, 6, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_Button7, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_Button7, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_Button7, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_Image36 = lv_image_create(ui_Button7);
-    lv_image_set_src(ui_Image36, &ui_img_icons_bedroom_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);
-    lv_obj_set_width(ui_Image36, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Image36, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Image36, 0);
-    lv_obj_set_y(ui_Image36, 4);
-    lv_obj_remove_flag(ui_Image36, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE |
-                       LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-
-    ui_Label43 = lv_label_create(ui_Button7);
-    lv_obj_set_width(ui_Label43, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Label43, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Label43, 48);
-    lv_obj_set_y(ui_Label43, 12);
-    lv_label_set_text(ui_Label43, "спальная комната");
-    lv_obj_set_style_text_color(ui_Label43, lv_color_hex(0x61C6CE), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_Label43, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(ui_Label43, &ui_font_RobotoBold16, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_Button33 = lv_button_create(ui_RoomsScreenRoomsContainer);
-    lv_obj_set_width(ui_Button33, 400);
-    lv_obj_set_height(ui_Button33, 48);
-    lv_obj_set_align(ui_Button33, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Button33, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
-    lv_obj_remove_flag(ui_Button33, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_bg_color(ui_Button33, lv_color_hex(0x2F5B7C), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_Button33, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_color(ui_Button33, lv_color_hex(0x61C6CE), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_opa(ui_Button33, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_width(ui_Button33, 1, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_border_side(ui_Button33, LV_BORDER_SIDE_BOTTOM, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_shadow_width(ui_Button33, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_shadow_spread(ui_Button33, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_Button33, 6, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_Button33, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_Button33, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_Button33, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_Image37 = lv_image_create(ui_Button33);
-    lv_image_set_src(ui_Image37, &ui_img_icons_lounge_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);
-    lv_obj_set_width(ui_Image37, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Image37, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Image37, 0);
-    lv_obj_set_y(ui_Image37, 4);
-    lv_obj_remove_flag(ui_Image37, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE |
-                       LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-
-    ui_Label44 = lv_label_create(ui_Button33);
-    lv_obj_set_width(ui_Label44, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Label44, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Label44, 48);
-    lv_obj_set_y(ui_Label44, 12);
-    lv_label_set_text(ui_Label44, "гостинная");
-    lv_obj_set_style_text_color(ui_Label44, lv_color_hex(0x61C6CE), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_Label44, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(ui_Label44, &ui_font_RobotoBold16, LV_PART_MAIN | LV_STATE_DEFAULT);
-
     ui_RoomsScreenAddRoomBtn = lv_button_create(ui_RoomsScreenMainPanel);
     lv_obj_set_width(ui_RoomsScreenAddRoomBtn, 400);
     lv_obj_set_height(ui_RoomsScreenAddRoomBtn, 48);
@@ -568,15 +445,6 @@ void ui_RoomsScreen_screen_destroy(void)
     ui_RoomsScreenMainPanel = NULL;
     uic_RoomsScreenRoomsContainer = NULL;
     ui_RoomsScreenRoomsContainer = NULL;
-    ui_Button6 = NULL;
-    ui_Image35 = NULL;
-    ui_Label42 = NULL;
-    ui_Button7 = NULL;
-    ui_Image36 = NULL;
-    ui_Label43 = NULL;
-    ui_Button33 = NULL;
-    ui_Image37 = NULL;
-    ui_Label44 = NULL;
     uic_RoomsScreenAddRoomBtn = NULL;
     ui_RoomsScreenAddRoomBtn = NULL;
     ui_Image34 = NULL;

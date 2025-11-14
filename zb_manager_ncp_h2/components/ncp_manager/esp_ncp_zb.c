@@ -1772,6 +1772,12 @@ static esp_err_t zb_manager_close_network_fn(const uint8_t *input, uint16_t inle
 static void esp_ncp_zb_simple_desc_callback(esp_zb_zdp_status_t zdo_status, esp_zb_af_simple_desc_1_1_t *simple_desc, void *user_ctx)
 {
     ESP_LOGW(TAG, "esp_ncp_zb_simple_desc_callback and status %d",zdo_status);
+    if (zdo_status != ESP_ZB_ZDP_STATUS_SUCCESS) 
+    {
+        if (user_ctx) free(user_ctx);
+        return;
+    }
+    
     esp_ncp_header_t ncp_header = {
         .sn = esp_random() % 0xFF,
         .id = ZB_MANAGER_SIMPLE_DESC_RESP,  // Убедитесь, что этот ID определён
@@ -1856,6 +1862,79 @@ static esp_err_t zb_manager_simple_desc_req_fn(const uint8_t *input, uint16_t in
     return ret;
 }
 
+static void esp_zb_zdo_active_ep_cb(esp_zb_zdp_status_t zdo_status, uint8_t ep_count, uint8_t *ep_id_list, void *user_ctx)
+{
+    for (int i = 0; i < ep_count; i++) {
+            ESP_LOGI(TAG, "Endpoint ID List: %d", ep_id_list[i]);
+    }
+    esp_ncp_header_t ncp_header = {
+        .sn = esp_random() % 0xFF,
+        .id = ZB_MANAGER_ACTIVE_EP_RESP,
+    };
+
+    typedef struct {
+        esp_zb_zdp_status_t    zdo_status;
+        uint8_t                ep_count;
+        esp_ncp_zb_user_cb_t   zdo_cb;                   /*!< A ZDO match desc request callback */
+    } ESP_NCP_ZB_PACKED_STRUCT esp_ncp_zb_find_parameters_t;
+
+
+    uint16_t outlen = sizeof(esp_ncp_zb_find_parameters_t) + (ep_count * sizeof(uint8_t)); // add ep_id_list
+    uint8_t *output = calloc(1, outlen);
+    //ESP_LOG_BUFFER_HEX_LEVEL(TAG, output, outlen, ESP_LOG_INFO);
+    if (output){
+       esp_ncp_zb_find_parameters_t *parameters = (esp_ncp_zb_find_parameters_t*)output;
+       parameters->zdo_status = zdo_status;
+       parameters->ep_count = ep_count;
+       ESP_LOGI(TAG,"size of parameters:%d", sizeof(*parameters));
+       ESP_LOG_BUFFER_HEX_LEVEL(TAG, output, outlen, ESP_LOG_INFO); 
+       if (user_ctx) {
+        memcpy(&parameters->zdo_cb, user_ctx, sizeof(esp_ncp_zb_user_cb_t));
+        free(user_ctx);
+       }
+       ESP_LOG_BUFFER_HEX_LEVEL(TAG, output, outlen, ESP_LOG_INFO); 
+
+       if (ep_id_list && ep_count) {
+            ESP_LOGI(TAG,"ep_id_list && ep_count"); 
+            memcpy(output + sizeof(esp_ncp_zb_find_parameters_t), ep_id_list, (ep_count * sizeof(uint8_t)));
+            //memcpy(parameters, ep_id_list, (ep_count * sizeof(uint8_t)));
+            //ESP_LOG_BUFFER_HEX_LEVEL(TAG, output, sizeof(esp_ncp_zb_find_parameters_t)+(ep_count * sizeof(uint8_t)), ESP_LOG_INFO);
+        }
+       ESP_LOGI(TAG,"esp_zb_zdo_active_ep_cb sending next status:%d, ep_count:%d", zdo_status, ep_count);
+       //ESP_LOG_BUFFER_HEX_LEVEL(TAG, output, sizeof(esp_ncp_zb_find_parameters_t)+(ep_count * sizeof(uint8_t)), ESP_LOG_INFO);
+       esp_ncp_noti_input(&ncp_header, output, sizeof(esp_ncp_zb_find_parameters_t)+(ep_count * sizeof(uint8_t)));
+       if (output) {free(output); output = NULL;}
+    }
+}
+
+static esp_err_t zb_manager_active_ep_req_fn(const uint8_t *input, uint16_t inlen, uint8_t **output, uint16_t *outlen)
+{
+    ESP_LOGI(TAG,"esp_ncp_zb_active_ep_req_fn");
+    esp_err_t ret = ESP_OK;
+    typedef struct {
+        esp_ncp_zb_user_cb_t user_ctx;      /*!< A ZDO match desc request callback */
+        uint16_t dst_nwk_addr;              /*!< NWK address that request sent to */
+    } __attribute__ ((packed)) esp_zb_zdo_active_ep_t;
+
+     if (input) {
+        esp_zb_zdo_active_ep_t *zdo_data = (esp_zb_zdo_active_ep_t *)input;
+        esp_zb_zdo_active_ep_req_param_t req = {
+            .addr_of_interest = zdo_data->dst_nwk_addr,
+        };
+        
+        uint32_t *user_ctx = calloc(1, sizeof(esp_ncp_zb_user_cb_t));
+        if (user_ctx) {
+            memcpy(user_ctx, input, sizeof(esp_ncp_zb_user_cb_t));
+        }
+        esp_zb_zdo_active_ep_req(&req, esp_zb_zdo_active_ep_cb, user_ctx);
+     }else{
+        ESP_LOGI(TAG,"esp_ncp_zb_active_ep_req_fn_invalid input");
+        ret = ESP_ERR_INVALID_ARG;
+    }
+    ESP_LOGI(TAG,"esp_ncp_zb_active_ep_req_fn_-go next");
+    return ret;
+}
+
 static const esp_ncp_zb_func_t ncp_zb_func_table[] = {
     {ESP_NCP_NETWORK_INIT, esp_ncp_zb_network_init_fn},
     {ESP_NCP_NETWORK_PAN_ID_SET, esp_ncp_zb_pan_id_set_fn},
@@ -1920,8 +1999,8 @@ static const esp_ncp_zb_func_t ncp_zb_func_table[] = {
     {ZB_MANAGER_START_CMD, zb_manager_start_fn},                                               // входящая команда
     {ZB_MANAGER_OPEN_NETWORK_CMD, zb_manager_open_network_fn},                                 // входящая команда
     {ZB_MANAGER_CLOSE_NETWORK_CMD, zb_manager_close_network_fn},
-    {ZB_MANAGER_SIMPLE_DESC_REQ_CMD, zb_manager_simple_desc_req_fn}                                 // входящая команда
-    
+    {ZB_MANAGER_SIMPLE_DESC_REQ_CMD, zb_manager_simple_desc_req_fn},                                 // входящая команда
+    {ZB_MANAGER_ACTIVE_EP_CMD, zb_manager_active_ep_req_fn},
 };
 
 esp_err_t esp_ncp_zb_output(esp_ncp_header_t *ncp_header, const void *buffer, uint16_t len)

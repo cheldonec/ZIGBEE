@@ -124,6 +124,21 @@ static void simple_desc_cb(esp_zb_zdp_status_t zdo_status, esp_zb_af_simple_desc
         ESP_LOGI(TAG, "*********************************************");
     }
 }
+static void active_ep_req_cb(esp_zb_zdp_status_t zdo_status, uint8_t ep_count, uint8_t *ep_id_list, void *user_ctx)
+{
+    if (zdo_status == ESP_ZB_ZDP_STATUS_SUCCESS)
+    {        
+            ESP_LOGW(TAG, "Active endpoint response: status(%d) and endpoint count(%d)", zdo_status, ep_count);
+            for (int i = 0; i < ep_count; i++) {
+                ESP_LOGI(TAG, "Endpoint ID List: %d", ep_id_list[i]);
+            }
+           
+    }else 
+        {
+            ESP_LOGW(TAG, "Active EP req error");
+            return;
+        }
+}
 
 void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
 {
@@ -242,10 +257,14 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
             if (*(uint8_t *)esp_zb_app_signal_get_params(p_sg_p)) {
                 ESP_LOGI(TAG, "Network(0x%04hx) is open for %d seconds", esp_zb_get_pan_id(), *(uint8_t *)esp_zb_app_signal_get_params(p_sg_p));
                 //TEST SIMPLE DESC
-                esp_zb_zdo_simple_desc_req_param_t req;
-                req.addr_of_interest = 0x9eec; 
-                req.endpoint = 0x01;
-                zb_manager_zdo_simple_desc_req(&req,simple_desc_cb,NULL);
+                //esp_zb_zdo_simple_desc_req_param_t req;
+                //req.addr_of_interest = 0x9eec; 
+                //req.endpoint = 0x01;
+                //zb_manager_zdo_simple_desc_req(&req,simple_desc_cb,NULL);
+                esp_zb_zdo_active_ep_req_param_t req;
+                req.addr_of_interest = 0x9eec;
+                zb_manager_zdo_active_ep_req(&req, active_ep_req_cb, NULL); 
+
             } else {
                 ESP_LOGW(TAG, "Network(0x%04hx) closed, devices joining not allowed.", esp_zb_get_pan_id());
             }
@@ -311,6 +330,11 @@ static void zb_actions_event_handler(void* handler_args, esp_event_base_t base, 
     }
 }
 
+static void ui_screen_event_handler(void* handler_args, esp_event_base_t base, int32_t id, void* event_data)
+{
+    ESP_LOGI(TAG, "Получено событие: база=%s, ID=%ld", base, id);
+}
+
 void app_main(void)
 {
     //start_lvgl_interface();
@@ -321,7 +345,9 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_event_handler_register(ZB_ACTION_HANDLER_EVENTS, ESP_EVENT_ANY_ID, &zb_actions_event_handler, NULL));
 
     lvgl_port_gui_init();
-    lvgl_main_prog_start();
+
+    ESP_ERROR_CHECK(esp_event_handler_register(UI_SCREEN_EVENTS, ESP_EVENT_ANY_ID, &ui_screen_event_handler, NULL));
+    /*lvgl_main_prog_start();
     ESP_LOGI(TAG, "RAM left before create %lu", esp_get_free_heap_size());
     zb_manager_temperature_sensor_ui_t* test_sensor = create_new_temperature_sensor_ui();
     vTaskDelay(1000 / portTICK_PERIOD_MS);
@@ -331,7 +357,28 @@ void app_main(void)
     ESP_LOGI(TAG, "RAM left after draw %lu", esp_get_free_heap_size());
     draw_temperature_sensor_minimal(test_sensor, ui_MainScreenSensorsContainer);
     vTaskDelay(1000 / portTICK_PERIOD_MS);
-    ESP_LOGI(TAG, "RAM left after redraw %lu", esp_get_free_heap_size());
+    ESP_LOGI(TAG, "RAM left after redraw %lu", esp_get_free_heap_size());*/
+    
+    ui_ScreenObject_t* screen1_obj =  ui_ScreenObjectCreate("ДОМ", 0, SCREEN_FOR_SENSORS_WIDGET_SHOW);
+    //ui_ScreenObject_t* screen2_obj =  ui_ScreenObjectCreate("Главный экран2", 1);
+    //ui_ScreenObjectSetScreenName(screen1_obj, "bjkfvnjkfdvnjfkdvnkdfjv");
+    ui_ScreenObjectLoadScreen(screen1_obj);
+
+    draw_temperature_sensor_minimal_widget(screen1_obj->main_panel_obj_pointer->main_panel_for_sensor_widget_show_screen->on_create_elements_array[0]);
+    //lv_obj_t* btn = lv_btn_create(screen2_obj->on_create_elements_array[0]);
+    //lv_obj_set_parent(btn, screen1_obj->on_create_elements_array[0]);
+    //ui_ScreenTopPanelObject_t* top_panel = ScreenTopPanelObjectCreate();
+    //if (top_panel==NULL) ESP_LOGI(TAG, "top_panel is NULL");
+    //lv_obj_set_parent(top_panel->on_create_elements_array[0], screen1_obj->on_create_elements_array[0]);
+    
+    //ui_ScreenMainPanelObject_t* main_panel = ScreenMainPanelObjectCreate();
+    //if (ui_ScreenObjectSetTopPanel(screen1_obj, top_panel) == ESP_FAIL) ESP_LOGI(TAG, "ui_ScreenObjectSetTopPanel FAIL");
+    //ui_ScreenObjectSetMainPanel(screen1_obj, main_panel);
+    //ui_ScreenObjectLoadScreen(screen1_obj);
+    //ui_MainScreen_screen_init();
+    //ui_RoomsScreen_screen_init();
+    //ui____initial_actions0 = lv_obj_create(NULL);
+    
 
     //ui_temperature_sensor_t* ui_temperature_sensor4 = draw_temperature_sensor_on_home_screen(ui_MainScreenSensorsContainer);
     //ui_humidity_sensor_t* ui_humidity_sensor = draw_humidity_sensor(ui_MainScreenSensorsContainer);

@@ -358,7 +358,9 @@ esp_err_t zb_manager_open_network(uint8_t seconds);
 
 esp_err_t zb_manager_close_network(void);
 
-esp_err_t zb_manager_zdo_simple_desc_req(esp_zb_zdo_simple_desc_req_param_t *cmd_req, esp_zb_zdo_simple_desc_callback_t user_cb, void *user_ctx);
+//esp_err_t zb_manager_zdo_simple_desc_req(esp_zb_zdo_simple_desc_req_param_t *cmd_req, esp_zb_zdo_simple_desc_callback_t user_cb, void *user_ctx);
+
+
 
 //#ifdef __cplusplus
 //}

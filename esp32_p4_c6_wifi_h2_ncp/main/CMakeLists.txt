@@ -18,6 +18,7 @@ idf_component_register(
                         "lcd_gui_prog/fonts/ui_font_RobotoMedium48.c"
                         "lcd_gui_prog/fonts/ui_font_CalibriBold22.c"
                         "lcd_gui_prog/fonts/ui_font_RobotoBold12.c"
+                        "lcd_gui_prog/fonts/ui_font_RobotoBlack22.c"
                         #"lcd_gui_prog/fonts/ui_font_RobotoBold14.c"
                         #"lcd_gui_prog/fonts/ui_font_RobotoBold14.c"
                         #"lcd_gui_prog/fonts/ui_font_RobotoBold14.c"
@@ -27,6 +28,8 @@ idf_component_register(
                         #"lcd_gui_prog/screens/ui_Screen4.c"
                         "lcd_gui_prog/screens/ui_MainScreen.c"
                         "lcd_gui_prog/screens/ui_RoomsScreen.c"
+                        "lcd_gui_prog/zb_gui_components/ui_ScreenComponent.c"
+                        "lcd_gui_prog/zb_gui_components/ui_PanelComponent.c"
                         "lcd_gui_prog/fonts/ui_font_RobotoCyrInfoLabels.c"
 
                         "lcd_gui_prog/ui.c"

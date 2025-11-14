@@ -14,6 +14,8 @@ extern "C" {
 
 //#include "lv_i18n.h"
 #include "ui_helpers.h"
+//#include "components/ui_comp.h"
+//#include "components/ui_comp_hook.h"
 #include "ui_events.h"
 
 
@@ -47,30 +49,30 @@ LV_IMG_DECLARE(
 LV_IMG_DECLARE(
     ui_img_icons_settings_64dp_61c6ce_fill0_wght200_grad0_opsz48_png);    // assets/icons/settings_64dp_61C6CE_FILL0_wght200_GRAD0_opsz48.png
 LV_IMG_DECLARE(
-    ui_img_icons_settings_24dp_61c6ce_fill0_wght200_grad0_opsz24_png);    // assets/icons/settings_24dp_61C6CE_FILL0_wght200_GRAD0_opsz24.png
+    ui_img_icons_add_widget_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/add_widget_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
 LV_IMG_DECLARE(
-    ui_img_icons_frame_inspect_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/frame_inspect_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
-LV_IMG_DECLARE(ui_img_bg_line_bottom_png);    // assets/bg_line_bottom.png
-LV_IMG_DECLARE(
-    ui_img_icons_kitchen_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/kitchen_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
-LV_IMG_DECLARE(
-    ui_img_icons_bedroom_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/bedroom_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
-LV_IMG_DECLARE(
-    ui_img_icons_lounge_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/lounge_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
-LV_IMG_DECLARE(
-    ui_img_icons_add_home_work_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/add_home_work_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
-LV_IMG_DECLARE(
-    ui_img_icons_lightbulb_off_64dp_61c6ce_fill0_wght200_grad0_opsz48_png);    // assets/icons/lightbulb_off_64dp_61C6CE_FILL0_wght200_GRAD0_opsz48.png
+    ui_img_icons_power_off_circle_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/power_off_circle_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
 LV_IMG_DECLARE(
     ui_img_icons_power_on_circle_36dp_61c6ce_fill1_wght200_grad0_opsz40_png);    // assets/icons/power_on_circle_36dp_61C6CE_FILL1_wght200_GRAD0_opsz40.png
 LV_IMG_DECLARE(
-    ui_img_icons_power_off_circle_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/power_off_circle_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
+    ui_img_icons_settings_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/settings_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
+LV_IMG_DECLARE(
+    ui_img_icons_lightbulb_off_64dp_61c6ce_fill0_wght200_grad0_opsz48_png);    // assets/icons/lightbulb_off_64dp_61C6CE_FILL0_wght200_GRAD0_opsz48.png
+LV_IMG_DECLARE(
+    ui_img_icons_settings_24dp_61c6ce_fill0_wght200_grad0_opsz24_png);    // assets/icons/settings_24dp_61C6CE_FILL0_wght200_GRAD0_opsz24.png
+LV_IMG_DECLARE(ui_img_bg_line_bottom_png);    // assets/bg_line_bottom.png
+LV_IMG_DECLARE(
+    ui_img_icons_add_home_work_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/add_home_work_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
+LV_IMG_DECLARE(
+    ui_img_icons_frame_inspect_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/frame_inspect_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
 LV_IMG_DECLARE(
     ui_img_icons_add_home_work_48dp_61c6ce_fill0_wght200_grad0_opsz48_png);    // assets/icons/add_home_work_48dp_61C6CE_FILL0_wght200_GRAD0_opsz48.png
 LV_IMG_DECLARE(
     ui_img_icons_add_home_work_64dp_61c6ce_fill0_wght200_grad0_opsz48_png);    // assets/icons/add_home_work_64dp_61C6CE_FILL0_wght200_GRAD0_opsz48.png
 LV_IMG_DECLARE(
     ui_img_icons_bathtub_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/bathtub_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
+LV_IMG_DECLARE(
+    ui_img_icons_bedroom_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/bedroom_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
 LV_IMG_DECLARE(
     ui_img_icons_child_hat_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/child_hat_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
 LV_IMG_DECLARE(
@@ -92,7 +94,11 @@ LV_IMG_DECLARE(
 LV_IMG_DECLARE(
     ui_img_icons_keyboard_48dp_2f5b7c_fill0_wght400_grad0_opsz48_png);    // assets/icons/keyboard_48dp_2F5B7C_FILL0_wght400_GRAD0_opsz48.png
 LV_IMG_DECLARE(
+    ui_img_icons_kitchen_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/kitchen_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
+LV_IMG_DECLARE(
     ui_img_icons_lightbulb_on_64dp_61c6ce_fill1_wght200_grad0_opsz48_png);    // assets/icons/lightbulb_on_64dp_61C6CE_FILL1_wght200_GRAD0_opsz48.png
+LV_IMG_DECLARE(
+    ui_img_icons_lounge_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/lounge_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
 LV_IMG_DECLARE(
     ui_img_icons_mic_48dp_2f5b7c_fill0_wght400_grad0_opsz48_png);    // assets/icons/mic_48dp_2F5B7C_FILL0_wght400_GRAD0_opsz48.png
 LV_IMG_DECLARE(
@@ -112,6 +118,8 @@ LV_IMG_DECLARE(
 LV_IMG_DECLARE(
     ui_img_icons_wc_36dp_61c6ce_fill0_wght200_grad0_opsz40_png);    // assets/icons/wc_36dp_61C6CE_FILL0_wght200_GRAD0_opsz40.png
 LV_IMG_DECLARE(ui_img_bg_top_line_png);    // assets/bg_top_line.png
+LV_IMG_DECLARE(
+    ui_img_icons_add_widget_48dp_61c6ce_fill0_wght200_grad0_opsz48_png);    // assets/icons/add_widget_48dp_61C6CE_FILL0_wght200_GRAD0_opsz48.png
 
 // FONTS
 LV_FONT_DECLARE(ui_font_Calibri12);

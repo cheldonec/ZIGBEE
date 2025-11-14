@@ -137,6 +137,8 @@ typedef struct {
 #define ZB_MANAGER_CLOSE_NETWORK_CMD                 0x5554 /*zb_manager close network*/
 #define ZB_MANAGER_SIMPLE_DESC_REQ_CMD               0x5555
 #define ZB_MANAGER_SIMPLE_DESC_RESP                  0x5556
+#define ZB_MANAGER_ACTIVE_EP_CMD                     0x5557
+#define ZB_MANAGER_ACTIVE_EP_RESP                    0x5558
 #define ZB_MANAGER_DEV_ASSOCIATED_EVENT               0x7001
 #define ZB_MANAGER_DEV_UPDATE_EVENT                   0x7002
 #define ZB_MANAGER_DEV_AUTH_EVENT                     0x7003

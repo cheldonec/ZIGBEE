@@ -8,7 +8,7 @@
 #include <string.h>
 
 #include "esp_host_zb.h"
-
+#include "esp_log.h"
 #include "esp_zigbee_zcl_common.h"
 #include "esp_zigbee_zdo_command.h"
 
@@ -120,6 +120,38 @@ const char *esp_zb_zdo_signal_to_string(esp_zb_app_signal_type_t signal)
 
 
 /***************************************************** ZB_MANAGER_FUNCTIONS *********************************/
+esp_err_t zb_manager_zdo_active_ep_req(esp_zb_zdo_active_ep_req_param_t *param, esp_zb_zdo_active_ep_callback_t user_cb, void *user_ctx)
+{
+    uint8_t output = 0;
+    uint16_t outlen = sizeof(uint8_t);
+    ESP_LOGI("HOST_ZDO_COMMAND_MODULE", "esp_zb_zdo_active_ep_req");
+    typedef struct {
+        esp_zb_user_cb_t find_usr;
+        uint16_t dst_nwk_addr;              /*!< NWK address that request sent to */
+    } __attribute__ ((packed)) esp_zb_zdo_active_ep_t;
+
+    //ESP_LOGI(TAG, "esp_zb_zdo_active_ep_req _before zdo_data");
+    esp_zb_zdo_active_ep_t zdo_data = {
+        .find_usr = {
+            .user_cb = (uint32_t)user_cb,
+            .user_ctx = (uint32_t)user_ctx,
+        },
+       .dst_nwk_addr = param->addr_of_interest,
+    };
+    uint16_t inlen = sizeof(esp_zb_zdo_active_ep_t);  // параметры не передаются, как выше в esp_zb_zdo_match_cluster
+    uint8_t  *input = calloc(1, inlen);
+    if (input) {
+        //ESP_LOGI(TAG, "esp_zb_zdo_active_ep_req _before memcopy");
+        memcpy(input, &zdo_data, sizeof(esp_zb_zdo_active_ep_t));
+        //ESP_LOGI(TAG, "esp_zb_zdo_active_ep_req _after memcopy");
+        esp_host_zb_output(ZB_MANAGER_ACTIVE_EP_CMD, input, inlen, &output, &outlen);
+        //ESP_LOGI(TAG, "esp_zb_zdo_active_ep_req _after esp_host_zb_output");
+        free(input);
+        input = NULL;
+    }
+    return ESP_OK;    
+}
+
 esp_err_t zb_manager_zdo_simple_desc_req(esp_zb_zdo_simple_desc_req_param_t *cmd_req, esp_zb_zdo_simple_desc_callback_t user_cb, void *user_ctx)
 {
     uint8_t output = 0;

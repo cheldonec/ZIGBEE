@@ -20,6 +20,8 @@
 #include "driver/ledc.h"
 #include "esp_lvgl_port.h"
 #include "zb_manager_devices.h"
+#include "zb_gui_components/ui_ScreenComponent.h"
+#include "zb_gui_components/ui_PanelComponent.h"
 
 //void start_lvgl_interface(void);
 void set_display_rotaition(lv_display_t * disp, lv_display_rotation_t rotation);
