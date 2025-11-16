@@ -120,7 +120,14 @@ LV_IMG_DECLARE(
 LV_IMG_DECLARE(ui_img_bg_top_line_png);    // assets/bg_top_line.png
 LV_IMG_DECLARE(
     ui_img_icons_add_widget_48dp_61c6ce_fill0_wght200_grad0_opsz48_png);    // assets/icons/add_widget_48dp_61C6CE_FILL0_wght200_GRAD0_opsz48.png
-
+LV_IMG_DECLARE(
+    ui_img_icons_net_is_open_48dp_61c6ce_fill1_wght200_grad0_opsz48_png;)   // assets/icons/ui_img_icons_net_is_open_48dp_61c6ce_fill1_wght200_grad0_opsz48_png.png
+    LV_IMG_DECLARE(
+        ui_img_icons_net_is_close_48dp_61c6ce_fill0_wght200_grad0_opsz48_png;)
+LV_IMG_DECLARE(
+    ui_img_icons_lock_open_36dp_61c6ce_fill0_wght200_grad0_opsz40_png;)
+LV_IMAGE_DECLARE(
+    ui_img_icons_lock_close_36dp_61c6ce_fill0_wght200_grad0_opsz40_png;)
 // FONTS
 LV_FONT_DECLARE(ui_font_Calibri12);
 LV_FONT_DECLARE(ui_font_Calibri14);

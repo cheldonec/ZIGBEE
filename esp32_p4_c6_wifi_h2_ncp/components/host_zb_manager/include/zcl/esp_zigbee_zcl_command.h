@@ -696,6 +696,119 @@ uint8_t esp_zb_zcl_color_step_color_temperature_cmd_req(esp_zb_zcl_color_step_co
  */
 uint8_t esp_zb_zcl_custom_cluster_cmd_req(esp_zb_zcl_custom_cluster_cmd_req_t *cmd_req);
 
+/***************************************************** ZB_MANAGER_CMD ******************************************/
+/**
+ * @brief The Zigbee ZCL read attribute command struct
+ *
+ */
+typedef struct esp_zb_zcl_read_attr_cmd_s {
+    esp_zb_zcl_basic_cmd_t zcl_basic_cmd;           /*!< Basic command info */
+    esp_zb_zcl_address_mode_t address_mode;         /*!< APS addressing mode constants refer to esp_zb_zcl_address_mode_t */
+    uint16_t clusterID;                             /*!< Cluster ID to read */
+    struct {
+        uint8_t manuf_specific   : 2;               /*!< Sent as manufacturer extension with code. */
+        uint8_t direction        : 1;               /*!< The command direction, refer to esp_zb_zcl_cmd_direction_t */
+        uint8_t dis_defalut_resp : 1;               /*!< Disable default response for this command. */
+    };
+    uint16_t manuf_code;                            /*!< The manufacturer code sent with the command. */
+    uint8_t attr_number;                            /*!< Number of attribute in the attr_field */
+    uint16_t *attr_field;                           /*!< Attribute identifier field to read */
+} esp_zb_zcl_read_attr_cmd_t;
+
+/**
+ * @brief The Zigbee zcl cluster attribute value struct
+ *
+ */
+ typedef struct esp_zb_zcl_attribute_data_s {
+    esp_zb_zcl_attr_type_t type; /*!< The type of attribute, which can refer to esp_zb_zcl_attr_type_t */
+    uint16_t size;               /*!< The value size of attribute  */
+    void *value;                 /*!< The value of attribute, Note that if the type is string/array, the first byte of value indicates the string length */
+} ESP_ZB_PACKED_STRUCT esp_zb_zcl_attribute_data_t;
+
+/**
+ * @brief The Zigbee zcl cluster attribute struct
+ *
+ */
+typedef struct esp_zb_zcl_attribute_s {
+    uint16_t id;                      /*!< The identify of attribute */
+    esp_zb_zcl_attribute_data_t data; /*!< The data of attribute */
+} esp_zb_zcl_attribute_t;
+
+/**
+ * @brief The variable of Zigbee zcl read attribute response
+ *
+ */
+typedef struct esp_zb_zcl_read_attr_resp_variable_s {
+    esp_zb_zcl_status_t status;                        /*!< The field specifies the status of the read operation on this attribute */
+    esp_zb_zcl_attribute_t attribute;                  /*!< The field contain the current value of this attribute, @ref esp_zb_zcl_attribute_s */
+    struct esp_zb_zcl_read_attr_resp_variable_s *next; /*!< Next variable */
+} esp_zb_zcl_read_attr_resp_variable_t;
+
+/**
+ * @brief The frame header of Zigbee zcl command struct
+ *
+ * @note frame control field:
+ * |----1 bit---|---------1 bit---------|---1 bit---|----------1 bit-----------|---4 bit---|
+ * | Frame type | Manufacturer specific | Direction | Disable Default Response | Reserved  |
+ *
+ */
+ typedef struct esp_zb_zcl_frame_header_s {
+    uint8_t fc;          /*!< A 8-bit Frame control */
+    uint16_t manuf_code; /*!< Manufacturer code */
+    uint8_t tsn;         /*!< Transaction sequence number */
+    int8_t rssi;         /*!< Signal strength */
+} esp_zb_zcl_frame_header_t;
+
+/**
+ * @brief The Zigbee zcl cluster command properties struct
+ *
+ */
+ typedef struct esp_zb_zcl_command_s {
+    uint8_t id;        /*!< The command id */
+    uint8_t direction; /*!< The command direction */
+    uint8_t is_common; /*!< The command is common type */
+} esp_zb_zcl_command_t;
+
+/**
+ * @brief The Zigbee zcl command basic application information struct
+ *
+ */
+ typedef struct esp_zb_zcl_cmd_info_s {
+    esp_zb_zcl_status_t status;       /*!< The status of command, which can refer to  esp_zb_zcl_status_t */
+    esp_zb_zcl_frame_header_t header; /*!< The command frame properties, which can refer to esp_zb_zcl_frame_field_t */
+    esp_zb_zcl_addr_t src_address;    /*!< The struct of address contains short and ieee address, which can refer to esp_zb_zcl_addr_s */
+    uint16_t dst_address;             /*!< The destination short address of command */
+    uint8_t src_endpoint;             /*!< The source endpoint of command */
+    uint8_t dst_endpoint;             /*!< The destination endpoint of command */
+    uint16_t cluster;                 /*!< The cluster id for command */
+    uint16_t profile;                 /*!< The application profile identifier*/
+    esp_zb_zcl_command_t command;     /*!< The properties of command */
+} esp_zb_zcl_cmd_info_t;
+
+/**
+ * @brief The Zigbee zcl read attribute response struct
+ *
+ */
+typedef struct esp_zb_zcl_cmd_read_attr_resp_message_s {
+    esp_zb_zcl_cmd_info_t info;                      /*!< The basic information of reading attribute response message that refers to esp_zb_zcl_cmd_info_t */
+    esp_zb_zcl_read_attr_resp_variable_t *variables; /*!< The variable items, @ref esp_zb_zcl_read_attr_resp_variable_s */
+} esp_zb_zcl_cmd_read_attr_resp_message_t;
+
+typedef struct zb_manager_cmd_read_attr_s {
+    uint16_t                  attr_id;
+    esp_zb_zcl_attr_type_t    attr_type;
+    uint8_t                   attr_len;
+    void*                     attr_value;
+}zb_manager_cmd_read_attr_t;
+
+typedef struct zb_manager_cmd_read_attr_resp_message_s {
+    esp_zb_zcl_cmd_info_t           info;
+    uint8_t                         attr_count;  // 
+    zb_manager_cmd_read_attr_t*     attr_arr;
+}zb_manager_cmd_read_attr_resp_message_t;
+//return the transaction sequence number
+uint8_t zm_manager_zcl_read_attr_cmd_req(esp_zb_zcl_read_attr_cmd_t *cmd_req);
+
 #ifdef __cplusplus
 }
 #endif

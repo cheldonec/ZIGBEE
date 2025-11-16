@@ -191,7 +191,7 @@ static esp_err_t zb_manager_report_attr_event_fn(const uint8_t *input, uint16_t 
         zdo_match_desc_callback(zdo_match_desc->zdo_status, zdo_match_desc->addr, zdo_match_desc->endpoint, (void *)zdo_match_desc->find_usr.user_ctx);
     }*/
     ESP_LOGI(TAG, "zb_manager_report_attr_event_fn");
-    eventLoopPost(ZB_ACTION_HANDLER_EVENTS, ATTR_REPORT_EVENT, NULL, 0, portMAX_DELAY);
+    eventLoopPost(ZB_HANDLER_EVENTS, ATTR_REPORT_EVENT, NULL, 0, portMAX_DELAY);
     //MY_EVENT_WIFI_CONNECTED
     return ESP_OK;
 }
@@ -212,9 +212,37 @@ static esp_err_t zb_manager_read_attr_resp_fn(const uint8_t *input, uint16_t inl
         esp_zb_zdo_match_desc_callback_t zdo_match_desc_callback = (esp_zb_zdo_match_desc_callback_t)zdo_match_desc->find_usr.user_cb;
         zdo_match_desc_callback(zdo_match_desc->zdo_status, zdo_match_desc->addr, zdo_match_desc->endpoint, (void *)zdo_match_desc->find_usr.user_ctx);
     }*/
-    ESP_LOGI(TAG, "zb_manager_read_attr_response_fn");
-    eventLoopPost(ZB_ACTION_HANDLER_EVENTS, ATTR_READ_RESP, NULL, 0, portMAX_DELAY);
-    //MY_EVENT_WIFI_CONNECTED
+   //ESP_LOG_BUFFER_HEX_LEVEL(TAG, input, inlen, ESP_LOG_DEBUG);
+   //esp_zb_zcl_cmd_read_attr_resp_message_t* resp_msg = calloc(1, inlen); 
+   zb_manager_cmd_read_attr_resp_message_t* resp_msg = NULL;
+   resp_msg = calloc(1,inlen);
+   memcpy(resp_msg, input, sizeof(esp_zb_zcl_cmd_info_t));
+   uint8_t attr_count = *(uint8_t*)(input + sizeof(esp_zb_zcl_cmd_info_t));
+   resp_msg->attr_count = attr_count;
+   ESP_LOGW(TAG, "zb_manager_read_attr_resp_fn attr_count %d", attr_count);
+
+   uint8_t* pointer = (uint8_t*)(input + sizeof(esp_zb_zcl_cmd_info_t) + sizeof(uint8_t));
+   zb_manager_cmd_read_attr_t* attr_arr = NULL;
+   attr_arr = calloc(1, attr_count * sizeof(zb_manager_cmd_read_attr_t));
+
+   for (uint8_t i = 0; i < attr_count; i++)
+   {
+        attr_arr[i].attr_id  = *((uint16_t*)pointer);
+        pointer = pointer + sizeof(uint16_t);
+
+        attr_arr[i].attr_type = *((esp_zb_zcl_attr_type_t*)pointer);
+        pointer = pointer + sizeof(esp_zb_zcl_attr_type_t);
+
+        attr_arr[i].attr_len = *(uint8_t*)(pointer);
+        pointer = pointer + sizeof(uint8_t);
+
+        attr_arr[i].attr_value = calloc(1, attr_arr[i].attr_len);
+        memcpy(attr_arr[i].attr_value, pointer, attr_arr[i].attr_len);
+        pointer = pointer + attr_arr[i].attr_len;
+        //ESP_LOGW(TAG, "zb_manager_read_attr_response_fn inlen %d short 0x%4x attr_index 0x%x attr_id 0x%x attr_type 0x%x attr_len %d", inlen, cmd_info->src_address.u.short_addr, i, attr_arr[i].attr_id, attr_arr[i].attr_type, attr_arr[i].attr_len);
+   }
+   resp_msg->attr_arr = attr_arr;
+   eventLoopPost(ZB_HANDLER_EVENTS, ATTR_READ_RESP, resp_msg, inlen, portMAX_DELAY);
     return ESP_OK;
 }
 

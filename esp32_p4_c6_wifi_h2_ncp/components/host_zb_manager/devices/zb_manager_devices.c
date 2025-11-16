@@ -18,14 +18,25 @@ int ieee_addr_compare(esp_zb_ieee_addr_t *a, esp_zb_ieee_addr_t *b)
 uint8_t RemoteDevicesCount = 0;
 device_custom_t** RemoteDevicesArray = NULL;
 
+uint8_t DeviceAppendShedulerCount = 0;
+device_appending_sheduler_t** DeviceAppendShedulerArray;
+
 esp_err_t zb_manager_devices_init(void)
 {
     RemoteDevicesCount = REMOTE_DEVICES_COUNT;
     RemoteDevicesArray = calloc(RemoteDevicesCount, sizeof(device_custom_t*));
     if (RemoteDevicesArray == NULL) return ESP_FAIL;
+    
     for (int i = 0; i < RemoteDevicesCount; i++) RemoteDevicesArray[i] = NULL;
+
+    DeviceAppendShedulerCount = 5;
+    DeviceAppendShedulerArray = calloc(DeviceAppendShedulerCount, sizeof(device_appending_sheduler_t*));
+    if(DeviceAppendShedulerArray == NULL) return ESP_FAIL;
+    for (int i = 0; i < DeviceAppendShedulerCount; i++) DeviceAppendShedulerArray[i] = NULL;
+    
     return ESP_OK;
 }
+
 
 endpoint_custom_t* RemoteDeviceEndpointCreate(uint8_t ep_id)
 {

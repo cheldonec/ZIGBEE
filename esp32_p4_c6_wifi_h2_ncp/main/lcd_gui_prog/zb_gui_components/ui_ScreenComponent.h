@@ -14,11 +14,14 @@ extern "C" {
 enum {
     UI_SCREEN_TP_HOME_CLICK,
     UI_SCREEN_TP_DEVICES_CLICK,
+    UI_SCREEN_MP_NETWORK_OPEN_CLICK,
+    UI_SCREEN_MP_NETWORK_CLOSE_CLICK,
 };
 
 typedef enum {
     SCREEN_EMPTY                   = 0,
     SCREEN_FOR_SENSORS_WIDGET_SHOW = 1,
+    SCREEN_FOR_DEVICES_WIDGET_SHOW = 2,
 }screen_type_t;
 
 typedef struct {    

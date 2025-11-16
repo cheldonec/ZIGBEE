@@ -297,6 +297,13 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
                         {
                             device_found = true;
                             ESP_LOGW(TAG, "ESP_ZB_NWK_SIGNAL_DEVICE_ASSOCIATED  device found in RemoteDevList FLAG Update set enable!!!");
+                            if (zb_manager_obj.RemoteDevicesArray[i]->endpoints_count > 0)
+                            {
+                                for (int j = 0; j < zb_manager_obj.RemoteDevicesArray[i]->endpoints_count; j++)
+                                {
+                                    RemoteDeviceEndpointDelete(zb_manager_obj.RemoteDevicesArray[i]->endpoints_array[j]);
+                                }
+                            }
                             zb_manager_obj.RemoteDevicesArray[i]->is_in_build_status = true;
                             //memcpy(temp_ieee, zb_manager_obj.RemoteDevicesArray[i], 8);
                             break;
@@ -322,6 +329,7 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
                         zb_manager_obj.RemoteDevicesArray[free_index] = RemoteDeviceCreate(temp_ieee);
                         if (zb_manager_obj.RemoteDevicesArray[free_index] != NULL) 
                         {
+                            zb_manager_obj.RemoteDevicesArray[free_index]->is_in_build_status = true;
                             ESP_LOGI(TAG, "Создано пустое устройство под индексом %d (mac: %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x)", free_index, dev_assoc_params->device_addr[7], 
                             dev_assoc_params->device_addr[6], dev_assoc_params->device_addr[5], dev_assoc_params->device_addr[4],
                             dev_assoc_params->device_addr[3], dev_assoc_params->device_addr[2], dev_assoc_params->device_addr[1], dev_assoc_params->device_addr[0]);
@@ -347,6 +355,24 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
                 dev_update_params->short_addr, dev_update_params->status, dev_update_params->long_addr[7], dev_update_params->long_addr[6], dev_update_params->long_addr[5], dev_update_params->long_addr[4],
                      dev_update_params->long_addr[3], dev_update_params->long_addr[2], dev_update_params->long_addr[1], dev_update_params->long_addr[0],dev_update_params->status);
                 
+                     // Обновляем короткий адрес
+                      // 1. ищем по списку
+                bool device_found = false;         // если будет найдено, то меняем статус is_in_build_status, а значит после dev_annce надо будет его опросить как новое
+                for (int i = 0; i < zb_manager_obj.RemoteDevicesCount; i++)
+                {
+                    if (zb_manager_obj.RemoteDevicesArray[i]!=NULL) 
+                    {
+                        if (ieee_addr_compare(&zb_manager_obj.RemoteDevicesArray[i]->ieee_addr, &dev_update_params->long_addr) == 0)
+                        {
+                            device_found = true;
+                            ESP_LOGW(TAG, "ESP_ZB_NWK_SIGNAL_DEVICE_UPDATE  device found in RemoteDevList FLAG Update set enable!!!");
+                            //zb_manager_obj.RemoteDevicesArray[i]->is_in_build_status = true; // меняем статус на переподключение
+                            zb_manager_obj.RemoteDevicesArray[i]->short_addr = dev_update_params->short_addr;
+                            //memcpy(temp_ieee, zb_manager_obj.RemoteDevicesArray[i], 8);
+                            break;
+                        }
+                    }
+                }
                 //Tuya Magic
                 esp_zb_zcl_read_attr_cmd_t req; // = calloc(1,sizeof(esp_zb_zcl_read_attr_cmd_t));
                 req.address_mode = ESP_ZB_APS_ADDR_MODE_16_ENDP_PRESENT;
@@ -361,7 +387,7 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
                 req.attr_number = sizeof(attributes) / sizeof(attributes[0]);
                 req.attr_field = calloc(1,sizeof(attributes[0]) * req.attr_number);
                 memcpy(req.attr_field, attributes, sizeof(uint16_t) * req.attr_number);
-                esp_zb_zcl_read_attr_cmd_req(&req);
+                //esp_zb_zcl_read_attr_cmd_req(&req);
 
                 ncp_header.id = ZB_MANAGER_DEV_UPDATE_EVENT;
                 esp_ncp_noti_input(&ncp_header, dev_update_params, sizeof(esp_zb_zdo_signal_device_update_params_t));
@@ -383,7 +409,7 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
         //esp_zb_lock_release();
         if(err_status == ESP_OK)
             {
-                ESP_LOGI(TAG, "ESP_ZB_ZDO_SIGNAL_DEVICE_ANNCE:");
+                ESP_LOGW(TAG, "ESP_ZB_ZDO_SIGNAL_DEVICE_ANNCE:");
                 dev_annce_params = (esp_zb_zdo_signal_device_annce_params_t *)esp_zb_app_signal_get_params(p_sg_p);
 
                 sprintf(buff, "DEVICE_ANNCE : %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x (short: 0x%04x)", 
@@ -432,7 +458,7 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
                     esp_zb_zdo_active_ep_req_param_t req;
                     req.addr_of_interest = dev_annce_params->device_short_addr;
                     ESP_LOGW(TAG, "ESP_ZB_ZDO_SIGNAL_DEVICE_ANNCE  Start esp_zb_zdo_active_ep_req");
-                    esp_zb_zdo_active_ep_req(&req, active_ep_cb, index); // отправляем в active_ep_cb индекс устройства в списке, чтобы не искать потом
+                    //esp_zb_zdo_active_ep_req(&req, active_ep_cb, index); // отправляем в active_ep_cb индекс устройства в списке, чтобы не искать потом
                 }
                 // Запускаем индикацию на устройстве, чтобы оно не заснуло
                 /*esp_zb_zcl_identify_cmd_t req;

@@ -4,7 +4,7 @@
 
 int ieee_addr_compare(esp_zb_ieee_addr_t *a, esp_zb_ieee_addr_t *b);
 
-esp_err_t zb_manager_devices_init(void);
+
 
 typedef struct attribute_custom_s{
     uint16_t                    id;
@@ -51,6 +51,11 @@ typedef struct endpoint_custom_s{
     zb_manager_temperature_measurement_cluster_t*       server_TemperatureMeasurementClusterObj;
 }endpoint_custom_t;
 
+typedef struct {
+    uint8_t ep_id;
+    uint8_t status;
+}dev_annce_simple_desc_controll_t;
+
 typedef struct device_custom_s{
     uint8_t                                 is_in_build_status;
     uint8_t                                 manuf_name_len;
@@ -63,14 +68,17 @@ typedef struct device_custom_s{
     uint8_t                                 capability;
     uint8_t                                 endpoints_count;
     endpoint_custom_t**                     endpoints_array;
+    uint8_t                                 control_dev_annce_simple_desc_req_count;
+    dev_annce_simple_desc_controll_t**      control_dev_annce_simple_desc_req_array;
 }device_custom_t;
 
 endpoint_custom_t* RemoteDeviceEndpointCreate(uint8_t ep_id); // создаёт пустую точку 0xff далее её надо заполнить или при создании устройства или при чтении из файла
 esp_err_t RemoteDeviceEndpointDelete(endpoint_custom_t* ep_object);
 device_custom_t*   RemoteDeviceCreate(esp_zb_ieee_addr_t ieee_addr); // скорее всего применение из ESP_ZB_NWK_SIGNAL_DEVICE_ASSOCIATED
 
-#define REMOTE_DEVICES_COUNT (32)
 
+#define REMOTE_DEVICES_COUNT (32)
+esp_err_t zb_manager_devices_init(void);
 extern uint8_t RemoteDevicesCount;
 extern device_custom_t** RemoteDevicesArray;
 

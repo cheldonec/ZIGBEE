@@ -124,7 +124,7 @@ esp_err_t zb_manager_zdo_active_ep_req(esp_zb_zdo_active_ep_req_param_t *param, 
 {
     uint8_t output = 0;
     uint16_t outlen = sizeof(uint8_t);
-    ESP_LOGI("HOST_ZDO_COMMAND_MODULE", "esp_zb_zdo_active_ep_req");
+    ESP_LOGI("HOST_ZDO_COMMAND_MODULE", "zb_manager_zdo_active_ep_req");
     typedef struct {
         esp_zb_user_cb_t find_usr;
         uint16_t dst_nwk_addr;              /*!< NWK address that request sent to */

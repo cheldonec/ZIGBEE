@@ -15,10 +15,16 @@ void ui_event_TopLableContainerClick_CB(lv_event_t * e)
         if (lvgl_port_lock(0) == true)
         {    //ui_Screen->main_panel_obj_pointer->top_panel_obj_pointer->on_create_elements_array[0]
             _ui_flag_modify(ui_Screen->main_panel_obj_pointer->top_panel_obj_pointer->on_create_elements_array[0], LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_TOGGLE);
-            lv_obj_t* temp_container =ui_Screen->main_panel_obj_pointer->main_panel_for_sensor_widget_show_screen->on_create_elements_array[0]; 
-            int32_t temp_height = lv_obj_get_height(temp_container);
-            if (temp_height < 520) {lv_obj_set_height(temp_container, 112 + temp_height);} else lv_obj_set_height(temp_container, 514);
-            
+            if(ui_Screen->screen_type == SCREEN_FOR_SENSORS_WIDGET_SHOW)
+            {
+                lv_obj_t* temp_container =ui_Screen->main_panel_obj_pointer->main_panel_for_sensor_widget_show_screen->on_create_elements_array[0]; 
+                int32_t temp_height = lv_obj_get_height(temp_container);
+                if (temp_height < 520) {lv_obj_set_height(temp_container, 112 + temp_height);} else lv_obj_set_height(temp_container, 514);
+            }else
+            if(ui_Screen->screen_type == SCREEN_FOR_DEVICES_WIDGET_SHOW)
+            {
+
+            }
             lvgl_port_unlock();
         }
     }
@@ -31,6 +37,23 @@ void ui_event_TopLableContainerClick_CB(lv_event_t * e)
         }
 
     }*/
+}
+
+void ui_event_MainPanelContainerClick_CB(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    ui_ScreenObject_t* ui_Screen = (ui_ScreenObject_t*)lv_event_get_user_data(e);
+    lv_obj_t* btn = lv_event_get_current_target(e);
+    if(event_code == LV_EVENT_CLICKED) {
+        if (btn == ui_Screen->main_panel_obj_pointer->buttons_for_devices_widget_show_screen->on_create_elements_array[ui_Screen->main_panel_obj_pointer->buttons_for_devices_widget_show_screen->button_open_network_index])
+        {
+            eventLoopPost(UI_SCREEN_EVENTS, UI_SCREEN_MP_NETWORK_OPEN_CLICK, NULL,0, portMAX_DELAY);
+        }else
+        if (btn == ui_Screen->main_panel_obj_pointer->buttons_for_devices_widget_show_screen->on_create_elements_array[ui_Screen->main_panel_obj_pointer->buttons_for_devices_widget_show_screen->button_close_network_index])
+        {
+            eventLoopPost(UI_SCREEN_EVENTS, UI_SCREEN_MP_NETWORK_CLOSE_CLICK, NULL,0, portMAX_DELAY);
+        }
+    }
 }
 
 void ui_event_TopPanelBtnClick_CB(lv_event_t * e)
@@ -167,15 +190,27 @@ ui_ScreenObject_t* ui_ScreenObjectCreate(const char* name, uint8_t global_index,
         {
             screen_obj->main_panel_obj_pointer = ScreenMainPanelObjectCreate(screen, MAIN_PANEL_FOR_SENSORS_WIDGET_SHOW, screen_obj->ScreenGlobalIndex);
 
-            lv_obj_add_event_cb(screen_obj->main_panel_obj_pointer->top_panel_obj_pointer->top_panel_buttons->on_create_elements_array[screen_obj->main_panel_obj_pointer->top_panel_obj_pointer->top_panel_buttons->button_home_index],
-            ui_event_TopPanelBtnClick_CB, LV_EVENT_ALL, screen_obj);
+        } else
+        if (screen_type == SCREEN_FOR_DEVICES_WIDGET_SHOW)
+        {
+            screen_obj->main_panel_obj_pointer = ScreenMainPanelObjectCreate(screen, MAIN_PANEL_FOR_DEVICES_WIDGET_SHOW, screen_obj->ScreenGlobalIndex);
 
-            lv_obj_add_event_cb(screen_obj->main_panel_obj_pointer->top_panel_obj_pointer->top_panel_buttons->on_create_elements_array[screen_obj->main_panel_obj_pointer->top_panel_obj_pointer->top_panel_buttons->button_devices_index],
-            ui_event_TopPanelBtnClick_CB, LV_EVENT_ALL, screen_obj);
-            //screen_obj->top_panel_obj_pointer = ScreenTopPanelObjectCreate(screen_obj->main_panel_obj_pointer->on_create_elements_array[0], TOP_PANEL_FOR_SENSORS_WIDGET_SHOW);
+            lv_obj_add_event_cb(screen_obj->main_panel_obj_pointer->buttons_for_devices_widget_show_screen->on_create_elements_array[screen_obj->main_panel_obj_pointer->buttons_for_devices_widget_show_screen->button_open_network_index], 
+                ui_event_MainPanelContainerClick_CB, LV_EVENT_ALL, screen_obj);
+            
+            lv_obj_add_event_cb(screen_obj->main_panel_obj_pointer->buttons_for_devices_widget_show_screen->on_create_elements_array[screen_obj->main_panel_obj_pointer->buttons_for_devices_widget_show_screen->button_close_network_index], 
+                ui_event_MainPanelContainerClick_CB, LV_EVENT_ALL, screen_obj);
+
         }
         //screen_obj->main_panel_obj_pointer->parentScreenGlobalIndex = screen_obj->ScreenGlobalIndex;
         //screen_obj->top_panel_obj_pointer->parentScreenGlobalIndex = screen_obj->ScreenGlobalIndex;
+        
+        
+        lv_obj_add_event_cb(screen_obj->main_panel_obj_pointer->top_panel_obj_pointer->top_panel_buttons->on_create_elements_array[screen_obj->main_panel_obj_pointer->top_panel_obj_pointer->top_panel_buttons->button_home_index],
+            ui_event_TopPanelBtnClick_CB, LV_EVENT_ALL, screen_obj);
+
+        lv_obj_add_event_cb(screen_obj->main_panel_obj_pointer->top_panel_obj_pointer->top_panel_buttons->on_create_elements_array[screen_obj->main_panel_obj_pointer->top_panel_obj_pointer->top_panel_buttons->button_devices_index],
+            ui_event_TopPanelBtnClick_CB, LV_EVENT_ALL, screen_obj);
         
         // событие для показа/скрытия TopPanel (дом, устройства...)
         lv_obj_add_event_cb(TopLable_Container, ui_event_TopLableContainerClick_CB, LV_EVENT_ALL, screen_obj);

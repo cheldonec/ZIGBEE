@@ -1060,17 +1060,19 @@ static esp_err_t esp_ncp_zb_read_attr_fn(const uint8_t *input, uint16_t inlen, u
                 .attr_number = zb_read_attr->attr_number,
                 .attr_field = attr_field,
             };
-            
-            esp_zb_zcl_read_attr_cmd_req(&read_req);
+        *outlen = sizeof(uint8_t); 
+        *output = calloc(1, *outlen);   
+        uint8_t tsn = esp_zb_zcl_read_attr_cmd_req(&read_req);
+        ESP_LOGW(TAG, "tsn esp_zb_zcl_read_attr_cmd_req %02x", tsn);
+        memcpy(*output, &tsn, *outlen);
+        ret = ESP_OK;
         } else {
             ret = ESP_ERR_NO_MEM;
             status = ESP_NCP_ERR_FATAL;
         }
     }
-
-    ESP_NCP_ZB_STATUS();
-
     return ret;
+    
 }
 
 static esp_err_t esp_ncp_zb_write_attr_fn(const uint8_t *input, uint16_t inlen, uint8_t **output, uint16_t *outlen)

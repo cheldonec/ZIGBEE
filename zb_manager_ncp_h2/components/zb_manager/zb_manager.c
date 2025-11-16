@@ -405,6 +405,10 @@ esp_err_t zb_manager_init()
     zb_manager_devices_init(); //in zb_manager_devices
     zb_manager_obj.RemoteDevicesCount = RemoteDevicesCount; // init in zb_manager_devices
     zb_manager_obj.RemoteDevicesArray = RemoteDevicesArray; // init in zb_manager_devices
+    /*if (zb_manager_devices_init(zb_manager_obj.RemoteDevicesArray, zb_manager_obj.RemoteDevicesCount)!= ESP_OK) 
+    {
+        ESP_LOGW(TAG, "Ошибка инициализации списка устройств");
+    }*/
     
     //if(zb_manager == NULL) return ESP_ERR_INVALID_ARG;
     // action handlers

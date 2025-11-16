@@ -23,6 +23,7 @@ esp_err_t zb_manager_devices_init(void)
     RemoteDevicesCount = REMOTE_DEVICES_COUNT;
     RemoteDevicesArray = calloc(RemoteDevicesCount, sizeof(device_custom_t*));
     if (RemoteDevicesArray == NULL) return ESP_FAIL;
+    
     for (int i = 0; i < RemoteDevicesCount; i++) RemoteDevicesArray[i] = NULL;
     return ESP_OK;
 }

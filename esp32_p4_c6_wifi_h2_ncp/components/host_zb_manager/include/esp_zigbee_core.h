@@ -340,13 +340,17 @@ esp_err_t esp_zb_device_register(esp_zb_ep_list_t *ep_list);
 /***************************************************** ZB_MANAGER_FUNCTIONS *********************************/
 // Определение базового типа событий
 //ESP_EVENT_DECLARE_BASE(ZB_ACTION_HANDLER_EVENTS);
-#define ZB_ACTION_HANDLER_EVENTS   (esp_event_base_t)("ZB_ACTION_HANDLER_EVENTS")
+#define ZB_HANDLER_EVENTS   (esp_event_base_t)("ZB_ACTION_HANDLER_EVENTS")
 //const esp_event_base_t zb_action_handler_event_group = "ZB_ACTION_HANDLER_EVENTS";
 
 // Определение конкретных событий
 enum {
     ATTR_REPORT_EVENT,
     ATTR_READ_RESP,
+    NETWORK_IS_OPEN,
+    NETWORK_IS_CLOSE,
+    NEW_DEVICE_JOINED,
+    NEW_DEVICE_JOINED_FAIL,
 };
 
 
