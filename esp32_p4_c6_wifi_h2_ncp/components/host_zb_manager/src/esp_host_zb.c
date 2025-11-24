@@ -132,10 +132,33 @@ static esp_err_t esp_host_zb_set_bind_fn(const uint8_t *input, uint16_t inlen)
     } ESP_ZNSP_ZB_PACKED_STRUCT esp_zb_zdo_bind_desc_t;
 
     esp_zb_zdo_bind_desc_t *zdo_bind_desc = (esp_zb_zdo_bind_desc_t *)input;
+
+    // 1. Вызываем user_cb
     if (zdo_bind_desc->bind_usr.user_cb) {
         esp_zb_zdo_bind_callback_t zdo_bind_desc_callback = (esp_zb_zdo_bind_callback_t)zdo_bind_desc->bind_usr.user_cb;
         zdo_bind_desc_callback(zdo_bind_desc->zdo_status, (void *)zdo_bind_desc->bind_usr.user_ctx);
     }
+
+    // 2. Формируем структуру для eventLoopPost
+    zb_manager_bind_resp_message_t* resp_msg = calloc(1, sizeof(zb_manager_bind_resp_message_t));
+    if (!resp_msg) {
+        ESP_LOGE(TAG, "Failed to allocate resp_msg for BIND_RESP");
+        return ESP_ERR_NO_MEM;
+    }
+
+    resp_msg->status = zdo_bind_desc->zdo_status;
+    resp_msg->user_ctx = (void*)zdo_bind_desc->bind_usr.user_ctx;
+
+    // 3. Отправляем в event loop
+    bool post_ok = eventLoopPost(ZB_HANDLER_EVENTS, BIND_RESP, resp_msg, sizeof(zb_manager_bind_resp_message_t), portMAX_DELAY);
+    if (!post_ok) {
+        ESP_LOGE(TAG, "Failed to post BIND_RESP event");
+        zb_manager_free_bind_resp(resp_msg); // ничего не очищает пока!!!!!!!!! добавлена для стильности
+        return ESP_FAIL;
+    }
+
+    ESP_LOGI(TAG, "BIND_RESP posted: status=0x%02x", resp_msg->status);
+    return ESP_OK;
 
     return ESP_OK;
 }
@@ -197,23 +220,8 @@ static esp_err_t zb_manager_report_attr_event_fn(const uint8_t *input, uint16_t 
 }
 
 
-static esp_err_t zb_manager_read_attr_resp_fn(const uint8_t *input, uint16_t inlen)
+/*static esp_err_t zb_manager_read_attr_resp_fn(const uint8_t *input, uint16_t inlen)
 {
-    /*typedef struct {
-        esp_zb_zdp_status_t zdo_status;
-        uint16_t            addr;
-        uint8_t             endpoint;
-        esp_zb_user_cb_t    find_usr;
-    } ESP_ZNSP_ZB_PACKED_STRUCT esp_zb_zdo_match_desc_t;
-
-    esp_zb_zdo_match_desc_t *zdo_match_desc = (esp_zb_zdo_match_desc_t *)input;
-
-    if (zdo_match_desc->find_usr.user_cb) {
-        esp_zb_zdo_match_desc_callback_t zdo_match_desc_callback = (esp_zb_zdo_match_desc_callback_t)zdo_match_desc->find_usr.user_cb;
-        zdo_match_desc_callback(zdo_match_desc->zdo_status, zdo_match_desc->addr, zdo_match_desc->endpoint, (void *)zdo_match_desc->find_usr.user_ctx);
-    }*/
-   //ESP_LOG_BUFFER_HEX_LEVEL(TAG, input, inlen, ESP_LOG_DEBUG);
-   //esp_zb_zcl_cmd_read_attr_resp_message_t* resp_msg = calloc(1, inlen); 
    zb_manager_cmd_read_attr_resp_message_t* resp_msg = NULL;
    resp_msg = calloc(1,inlen);
    memcpy(resp_msg, input, sizeof(esp_zb_zcl_cmd_info_t));
@@ -244,7 +252,9 @@ static esp_err_t zb_manager_read_attr_resp_fn(const uint8_t *input, uint16_t inl
    resp_msg->attr_arr = attr_arr;
    eventLoopPost(ZB_HANDLER_EVENTS, ATTR_READ_RESP, resp_msg, inlen, portMAX_DELAY);
     return ESP_OK;
-}
+}*/
+
+
 
 static esp_err_t zb_manager_dev_annce_event_fn(const uint8_t *input, uint16_t inlen)
 {
@@ -323,17 +333,53 @@ static esp_err_t zb_manager_simple_desc_resp_fn(const uint8_t *input, uint16_t i
         esp_zb_af_simple_desc_1_1_t simple_desc; 
     } ESP_ZNSP_ZB_PACKED_STRUCT zb_manager_simple_desc_resp_pack_t;
 
-    zb_manager_simple_desc_resp_pack_t *simple_desc_resp = (zb_manager_simple_desc_resp_pack_t *)input;
-   
-    if (simple_desc_resp->find_usr.user_cb) {
-        esp_zb_zdo_simple_desc_callback_t zdo_simple_desc_callback = (esp_zb_zdo_simple_desc_callback_t)simple_desc_resp->find_usr.user_cb;
-        zdo_simple_desc_callback(simple_desc_resp->zdo_status, (esp_zb_af_simple_desc_1_1_t*)(&simple_desc_resp->simple_desc), (void *)simple_desc_resp->find_usr.user_ctx);
+    zb_manager_simple_desc_resp_pack_t *pkg  = (zb_manager_simple_desc_resp_pack_t *)input;
+    // 1. Вызываем callback (user_cb) с user_ctx
+    if (pkg ->find_usr.user_cb) {
+        esp_zb_zdo_simple_desc_callback_t zdo_simple_desc_callback = (esp_zb_zdo_simple_desc_callback_t)pkg ->find_usr.user_cb;
+        zdo_simple_desc_callback(pkg ->zdo_status, (esp_zb_af_simple_desc_1_1_t*)(&pkg ->simple_desc), (void *)pkg ->find_usr.user_ctx);
+    }
+
+     // 2. Формируем структуру для отправки в eventLoopPost
+     //определяем размер esp_zb_af_simple_desc_1_1_t
+    size_t simple_desc_size = sizeof(esp_zb_af_simple_desc_1_1_t) + 
+        (pkg->simple_desc.app_input_cluster_count + pkg->simple_desc.app_output_cluster_count) * sizeof(uint16_t);
+    // 3. Выделяем память под simple_desc
+        esp_zb_af_simple_desc_1_1_t* desc_copy = NULL;
+    desc_copy = calloc(1, simple_desc_size);
+    if (!desc_copy) {
+        ESP_LOGE(TAG, "Failed to allocate memory for simple_desc copy");
+        return ESP_ERR_NO_MEM;
+    }
+    // 4. Копируем всю структуру (включая кластеры)
+    memcpy(desc_copy, &pkg->simple_desc, simple_desc_size);
+
+    // 5. Выделяем основную структуру для event loop
+    zb_manager_simple_desc_resp_message_t* resp_msg = NULL;
+    resp_msg = calloc(1, sizeof(zb_manager_simple_desc_resp_message_t));
+    if (!resp_msg) {
+        ESP_LOGE(TAG, "Failed to allocate resp_msg");
+        free(desc_copy);
+        return ESP_ERR_NO_MEM;
+    }
+    resp_msg->status = pkg->zdo_status;
+    resp_msg->simple_desc = desc_copy;
+    resp_msg->user_ctx = (void*)pkg->find_usr.user_ctx;
+
+    // 6. Отправляем в event loop
+    bool post_ok = eventLoopPost(ZB_HANDLER_EVENTS, SIMPLE_DESC_RESP, resp_msg, sizeof(zb_manager_simple_desc_resp_message_t), portMAX_DELAY);
+    if (!post_ok) {
+        ESP_LOGE(TAG, "Failed to post SIMPLE_DESC_RESP event");
+        zb_manager_free_simple_desc_resp(resp_msg);
+        free(resp_msg);
+        resp_msg = NULL;
+        return ESP_FAIL;
     }
 
     return ESP_OK;
 }
 
-static esp_err_t  zb_manager_active_ep_resp_fn(const uint8_t *input, uint16_t inlen)
+/*static esp_err_t  zb_manager_active_ep_resp_fn(const uint8_t *input, uint16_t inlen)
 {
     ESP_LOGI(TAG, "zb_manager_active_ep_resp_fn");
     //ESP_LOG_BUFFER_HEX_LEVEL(TAG, input, inlen, ESP_LOG_INFO);
@@ -357,6 +403,168 @@ static esp_err_t  zb_manager_active_ep_resp_fn(const uint8_t *input, uint16_t in
     free(output);
     output = NULL;
     }
+    return ESP_OK;
+}*/
+
+/**
+ * @brief Обработчик Active EP Response
+ * 
+ * Парсит входящий ZDO-ответ на запрос
+ * esp_err_t zb_manager_zdo_active_ep_req(esp_zb_zdo_active_ep_req_param_t *cmd_req, esp_zb_zdo_active_ep_callback_t user_cb, void *user_ctx);
+ * который подразумевает вызов CB
+ * при обработке сперва вызывается CB + void *user_ctx
+ * потом ответ отправляется в event loop zb_manager_active_ep_resp_message_t + void *user_ctx
+ */
+static esp_err_t zb_manager_active_ep_resp_fn(const uint8_t *input, uint16_t inlen)
+{
+    ESP_LOGI(TAG, "zb_manager_active_ep_resp_fn: inlen=%d", inlen);
+    
+    // структура входящих данных
+    typedef struct {
+        esp_zb_zdp_status_t zdo_status;
+        uint8_t             ep_count;
+        esp_zb_user_cb_t    find_usr;
+        //uint8_t*            ep_id_list; 
+    } ESP_ZNSP_ZB_PACKED_STRUCT esp_zb_zdo_active_ep_t;
+
+    // 1. готовим вызов CB
+    uint16_t outlen = inlen;// - sizeof(esp_zb_zdo_active_ep_t); // add ep_id_list
+    uint8_t *output_for_cb = calloc(1, outlen);
+    if (output_for_cb){
+        memcpy(output_for_cb, input, outlen);
+        esp_zb_zdo_active_ep_t *zdo_active_ep = (esp_zb_zdo_active_ep_t *)output_for_cb;
+        //вызываем CB
+        if(zdo_active_ep->find_usr.user_cb){
+            esp_zb_zdo_active_ep_callback_t active_ep_cb = (esp_zb_zdo_active_ep_callback_t)zdo_active_ep->find_usr.user_cb;
+            active_ep_cb(zdo_active_ep->zdo_status, zdo_active_ep->ep_count, output_for_cb + sizeof(esp_zb_zdo_active_ep_t), (void*)zdo_active_ep->find_usr.user_ctx);
+        }
+    free(output_for_cb);
+    output_for_cb = NULL;
+    }
+    
+    //2. готовим ответ в event loop
+
+    // 1. Выделяем основную структуру
+    zb_manager_active_ep_resp_message_t *resp_msg = calloc(1, sizeof(zb_manager_active_ep_resp_message_t));
+    if (!resp_msg) {
+        ESP_LOGE(TAG, "Failed to allocate resp_msg");
+        return ESP_ERR_NO_MEM;
+    }
+    esp_zb_zdo_active_ep_t *zdo_active_ep = (esp_zb_zdo_active_ep_t *)input;
+    resp_msg->status = *(esp_zb_zdp_status_t*)zdo_active_ep;
+    resp_msg->ep_count = zdo_active_ep->ep_count;
+    resp_msg->user_ctx = (void*)zdo_active_ep->find_usr.user_ctx;
+
+    const uint8_t *ptr = input + sizeof(esp_zb_zdo_active_ep_t);
+    
+    // 3. Выделяем массив endpoint'ов
+    resp_msg->ep_list = calloc(resp_msg->ep_count, sizeof(uint8_t));
+    if (!resp_msg->ep_list) {
+        ESP_LOGE(TAG, "Failed to allocate ep_list");
+        free(resp_msg);
+        resp_msg = NULL;
+        return ESP_ERR_NO_MEM;
+    }
+
+    // 4. Копируем endpoint'ы
+    memcpy(resp_msg->ep_list, input + sizeof(esp_zb_zdo_active_ep_t), resp_msg->ep_count);
+    ptr += resp_msg->ep_count;
+    
+    // 5. Логируем (опционально)
+    ESP_LOGI(TAG, "Active EP Response: status=0x%02x, count=%d,", resp_msg->status, resp_msg->ep_count);
+    //ESP_LOG_BUFFER_HEX_LEVEL(TAG, resp_msg->ep_list, resp_msg->ep_count, ESP_LOG_INFO);
+
+    // 6. ✅ Отправляем в event loop
+    bool post_ok = eventLoopPost(ZB_HANDLER_EVENTS, ACTIVE_EP_RESP, resp_msg, sizeof(zb_manager_active_ep_resp_message_t), portMAX_DELAY);
+    if (!post_ok) {
+        ESP_LOGE(TAG, "Failed to post ACTIVE_EP_RESP_EVENT");
+        // Освобождаем при ошибке
+        zb_manager_free_active_ep_resp_ep_array(resp_msg);
+        free(resp_msg);
+        resp_msg = NULL;
+        return ESP_FAIL;
+    }
+
+    return ESP_OK;
+}
+
+static esp_err_t zb_manager_read_attr_resp_fn(const uint8_t *input, uint16_t inlen)
+{
+    ESP_LOGI(TAG, "zb_manager_read_attr_resp_fn: inlen=%d", inlen);
+
+    // 1. Выделяем основную структуру
+    zb_manager_cmd_read_attr_resp_message_t* resp_msg = NULL;
+    resp_msg = calloc(1, sizeof(zb_manager_cmd_read_attr_resp_message_t));
+    if (!resp_msg) {
+        ESP_LOGE(TAG, "Failed to allocate resp_msg");
+        return ESP_ERR_NO_MEM;
+    }
+
+    // 2. Копируем общую информацию (esp_zb_zcl_cmd_info_t)
+    esp_zb_zcl_cmd_info_t* cmd_info = (esp_zb_zcl_cmd_info_t*)input;
+    memcpy(&resp_msg->info, cmd_info, sizeof(esp_zb_zcl_cmd_info_t));
+
+    // 3. Читаем attr_count
+    uint8_t attr_count = *(uint8_t*)(input + sizeof(esp_zb_zcl_cmd_info_t));
+    resp_msg->attr_count = attr_count;
+    ESP_LOGW(TAG, "Attribute count: %d", attr_count);
+
+    // 4. Выделяем массив атрибутов
+    resp_msg->attr_arr = calloc(attr_count, sizeof(zb_manager_cmd_read_attr_t));
+    if (!resp_msg->attr_arr) {
+        ESP_LOGE(TAG, "Failed to allocate attr_arr");
+        free(resp_msg);
+        return ESP_ERR_NO_MEM;
+    }
+
+    // 5. Парсим каждый атрибут
+    uint8_t* pointer = (uint8_t*)(input + sizeof(esp_zb_zcl_cmd_info_t) + sizeof(uint8_t));
+
+    for (uint8_t i = 0; i < attr_count; i++) {
+        zb_manager_cmd_read_attr_t* attr = &resp_msg->attr_arr[i];
+
+        attr->attr_id  = *((uint16_t*)pointer);
+        pointer += sizeof(uint16_t);
+
+        attr->attr_type = *((esp_zb_zcl_attr_type_t*)pointer);
+        pointer += sizeof(esp_zb_zcl_attr_type_t);
+
+        attr->attr_len = *(uint8_t*)pointer;
+        pointer += sizeof(uint8_t);
+
+        // 6. Выделяем память под значение
+        if (attr->attr_len > 0) {
+            attr->attr_value = calloc(1, attr->attr_len);
+            if (!attr->attr_value) {
+                ESP_LOGE(TAG, "Failed to allocate attr_value for attr_id=0x%04x", attr->attr_id);
+                // Освобождаем всё, что уже выделено
+                for (int j = 0; j < i; j++) {
+                    free(resp_msg->attr_arr[j].attr_value);
+                }
+                free(resp_msg->attr_arr);
+                free(resp_msg);
+                return ESP_ERR_NO_MEM;
+            }
+            memcpy(attr->attr_value, pointer, attr->attr_len);
+            pointer += attr->attr_len;
+        } else {
+            attr->attr_value = NULL;
+        }
+
+        ESP_LOG_BUFFER_HEX_LEVEL(TAG, attr->attr_value, attr->attr_len, ESP_LOG_DEBUG);
+    }
+
+    // 7. ✅ Передаём структуру в event loop
+    bool post_err = eventLoopPost(ZB_HANDLER_EVENTS, ATTR_READ_RESP, resp_msg, inlen, portMAX_DELAY);
+    if (post_err != true) {
+        ESP_LOGE(TAG, "eventLoopPost failed: %s", esp_err_to_name(post_err));
+        // Освобождаем при ошибке
+        zb_manager_free_read_attr_resp_attr_array(resp_msg);
+        free(resp_msg);
+        resp_msg = NULL;
+        return ESP_FAIL;
+    }
+
     return ESP_OK;
 }
 

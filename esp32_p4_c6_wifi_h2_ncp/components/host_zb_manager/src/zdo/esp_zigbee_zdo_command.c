@@ -120,6 +120,17 @@ const char *esp_zb_zdo_signal_to_string(esp_zb_app_signal_type_t signal)
 
 
 /***************************************************** ZB_MANAGER_FUNCTIONS *********************************/
+void zb_manager_free_active_ep_resp_ep_array(zb_manager_active_ep_resp_message_t *resp)
+{
+    if (!resp) return;
+
+    if (resp->ep_list) {
+        free(resp->ep_list);
+        resp->ep_list = NULL;
+    }
+
+}
+
 esp_err_t zb_manager_zdo_active_ep_req(esp_zb_zdo_active_ep_req_param_t *param, esp_zb_zdo_active_ep_callback_t user_cb, void *user_ctx)
 {
     uint8_t output = 0;
@@ -152,6 +163,16 @@ esp_err_t zb_manager_zdo_active_ep_req(esp_zb_zdo_active_ep_req_param_t *param, 
     return ESP_OK;    
 }
 
+
+void zb_manager_free_simple_desc_resp(zb_manager_simple_desc_resp_message_t* resp)
+{
+    if (!resp) return;
+    if (resp->simple_desc) {
+        free(resp->simple_desc);
+        resp->simple_desc = NULL;
+    }
+}
+
 esp_err_t zb_manager_zdo_simple_desc_req(esp_zb_zdo_simple_desc_req_param_t *cmd_req, esp_zb_zdo_simple_desc_callback_t user_cb, void *user_ctx)
 {
     uint8_t output = 0;
@@ -179,4 +200,10 @@ esp_err_t zb_manager_zdo_simple_desc_req(esp_zb_zdo_simple_desc_req_param_t *cmd
         input = NULL;
     }
     return ESP_OK;
+}
+
+void zb_manager_free_bind_resp(zb_manager_bind_resp_message_t* resp)
+{
+    /*if (!resp) return;
+    free(resp);*/
 }

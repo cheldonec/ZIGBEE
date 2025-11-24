@@ -527,9 +527,9 @@ ui_MainPanelForDevicesWidget_buttonsContainer_t* MainPanelForDevicesWidget_butto
         btns_obj->button_close_network_index = btns_obj->on_create_elements_count-1;
         lv_obj_set_width(ui_ButtonCloseNetwork, 48);
         lv_obj_set_height(ui_ButtonCloseNetwork, 48);
-        lv_obj_set_x(ui_ButtonCloseNetwork, -96);
+        lv_obj_set_x(ui_ButtonCloseNetwork, 192);
         lv_obj_set_y(ui_ButtonCloseNetwork, 0);
-        lv_obj_set_align(ui_ButtonCloseNetwork, LV_ALIGN_RIGHT_MID);
+        lv_obj_set_align(ui_ButtonCloseNetwork, LV_ALIGN_LEFT_MID);
         lv_obj_add_flag(ui_ButtonCloseNetwork, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
         lv_obj_remove_flag(ui_ButtonCloseNetwork, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
         lv_obj_set_style_radius(ui_ButtonCloseNetwork, 9, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -598,7 +598,7 @@ ui_MainPanelForDevicesWidget_buttonsContainer_t* MainPanelForDevicesWidget_butto
     } else return NULL;
 }
 
-esp_err_t MainPanelForDevicesWidget_buttonsContainer_set_state(ui_MainPanelForDevicesWidget_buttonsContainer_t* container, uint8_t state)
+esp_err_t MainPanelForDevicesWidget_network_state_img_set(ui_MainPanelForDevicesWidget_buttonsContainer_t* container, uint8_t state)
 {
     if (lvgl_port_lock(0) == true)
     {
@@ -666,7 +666,7 @@ ui_MainPanelForDevicesMainSensorsPanel_t* MainPanelForDevicesMainSensorsPanelCre
         lv_obj_set_y(ui_DevicessContainer, 58);
         lv_obj_set_align(ui_DevicessContainer, LV_ALIGN_TOP_MID);
         lv_obj_set_flex_flow(ui_DevicessContainer, LV_FLEX_FLOW_COLUMN);
-        lv_obj_set_flex_align(ui_DevicessContainer, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
+        lv_obj_set_flex_align(ui_DevicessContainer, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
         //lv_obj_remove_flag(ui_SensorsContainer, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
         lv_obj_set_scroll_dir(ui_DevicessContainer, LV_DIR_VER);
         lv_obj_set_scrollbar_mode(ui_DevicessContainer, LV_SCROLLBAR_MODE_OFF);
@@ -685,15 +685,15 @@ ui_MainPanelForDevicesMainSensorsPanel_t* MainPanelForDevicesMainSensorsPanelCre
     lv_obj_set_style_border_width(ui_DevicessContainer, 1, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_side(ui_DevicessContainer, LV_BORDER_SIDE_FULL, LV_PART_MAIN | LV_STATE_DEFAULT);
     /************* TEST FILL Container */
-    for (int i = 0; i < 2; i++)
+    /*for (int i = 0; i < 2; i++)
     {
         lv_obj_t* test_obj = lv_button_create(ui_DevicessContainer);
             lv_obj_set_width(test_obj, LV_SIZE_CONTENT);
             lv_obj_set_height(test_obj, LV_SIZE_CONTENT);
-    }
-        lv_obj_set_style_pad_left(ui_DevicessContainer, 6, LV_PART_MAIN | LV_STATE_DEFAULT);
+    }*/
+        lv_obj_set_style_pad_left(ui_DevicessContainer, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
         lv_obj_set_style_pad_right(ui_DevicessContainer, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_set_style_pad_top(ui_DevicessContainer, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_obj_set_style_pad_top(ui_DevicessContainer, 27, LV_PART_MAIN | LV_STATE_DEFAULT);
         lv_obj_set_style_pad_bottom(ui_DevicessContainer, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
         lv_obj_set_style_pad_row(ui_DevicessContainer, 6, LV_PART_MAIN | LV_STATE_DEFAULT);
         lv_obj_set_style_pad_column(ui_DevicessContainer, 0, LV_PART_MAIN | LV_STATE_DEFAULT);

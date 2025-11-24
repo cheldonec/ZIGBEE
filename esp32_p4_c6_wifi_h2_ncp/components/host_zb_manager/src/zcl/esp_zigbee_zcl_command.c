@@ -110,3 +110,19 @@ uint8_t zm_manager_zcl_read_attr_cmd_req(esp_zb_zcl_read_attr_cmd_t *cmd_req)
     //return ESP_OK;
     return output;
 }
+
+void zb_manager_free_read_attr_resp_attr_array(zb_manager_cmd_read_attr_resp_message_t* resp)
+{
+    if (!resp) return;
+
+    if (resp->attr_arr) {
+        for (int i = 0; i < resp->attr_count; i++) {
+            if (resp->attr_arr[i].attr_value) {
+                free(resp->attr_arr[i].attr_value);
+                resp->attr_arr[i].attr_value = NULL;
+            }
+        }
+        free(resp->attr_arr);
+        resp->attr_arr = NULL;
+    }
+}

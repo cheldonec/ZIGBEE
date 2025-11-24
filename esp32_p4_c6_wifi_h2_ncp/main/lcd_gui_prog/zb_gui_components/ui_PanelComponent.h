@@ -1,6 +1,7 @@
 #ifndef UI_PANELCOMPONENT_H
 #define UI_PANELCOMPONENT_H
 #include "esp_err.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -55,7 +56,7 @@ typedef struct {
 }ui_MainPanelForDevicesWidget_buttonsContainer_t;
  
 ui_MainPanelForDevicesWidget_buttonsContainer_t* MainPanelForDevicesWidget_buttonsContainerCreate(lv_obj_t* parent, uint8_t parentScreenGlobalIndex);
-esp_err_t MainPanelForDevicesWidget_buttonsContainer_set_state(ui_MainPanelForDevicesWidget_buttonsContainer_t* container, uint8_t state); // меняеет иконку 0-выключена
+esp_err_t MainPanelForDevicesWidget_network_state_img_set(ui_MainPanelForDevicesWidget_buttonsContainer_t* container, uint8_t state); // меняеет иконку 0-выключена
 
 /*************************************************************** ui_MainPanelForDevicesMainSensorsPanel_t; ********************************************/
 typedef struct {

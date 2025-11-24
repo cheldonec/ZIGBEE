@@ -809,6 +809,12 @@ typedef struct zb_manager_cmd_read_attr_resp_message_s {
 //return the transaction sequence number
 uint8_t zm_manager_zcl_read_attr_cmd_req(esp_zb_zcl_read_attr_cmd_t *cmd_req);
 
+/**
+ * @brief Очищает массив  внутри zb_manager_cmd_read_attr_resp_message_t после передачи в event, сам объект не удаляется, так как 
+ * после обработки в event он будет удалён автоматически
+ */
+/************ !!!!!!!!!!!!!!!!! Чистит только массив с атрибутами, сама структура удаляется из обработчика так как передача происходит чере esp_event_post */
+void zb_manager_free_read_attr_resp_attr_array(zb_manager_cmd_read_attr_resp_message_t* resp);
 #ifdef __cplusplus
 }
 #endif

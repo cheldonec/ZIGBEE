@@ -26,7 +26,7 @@
 {                                                                   \
     .endpoint = HA_REMOTE_DEVICE_ENDPOINT1,                          \
     .app_profile_id = ESP_ZB_AF_HA_PROFILE_ID,                      \   
-    .app_device_id = ESP_ZB_HA_ON_OFF_LIGHT_DEVICE_ID,            \
+    .app_device_id = ESP_ZB_HA_REMOTE_CONTROL_DEVICE_ID,            \
     .app_device_version = 0,                                        \
 }                                    
 

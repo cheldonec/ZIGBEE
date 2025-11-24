@@ -22,7 +22,7 @@
 #include "zb_manager_devices.h"
 #include "zb_gui_components/ui_ScreenComponent.h"
 #include "zb_gui_components/ui_PanelComponent.h"
-
+#include "zb_gui_components/ui_widgets.h"
 //void start_lvgl_interface(void);
 void set_display_rotaition(lv_display_t * disp, lv_display_rotation_t rotation);
 void print_log_to_screen(char* text, uint32_t color);

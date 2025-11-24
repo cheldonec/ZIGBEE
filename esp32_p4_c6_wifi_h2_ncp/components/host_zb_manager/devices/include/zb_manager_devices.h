@@ -2,6 +2,7 @@
 #define ZB_MANAGER_DEVICES_H
 #include "zb_manager_clusters.h"
 #include "esp_zigbee_core.h"
+#include "esp_timer.h"
 int ieee_addr_compare(esp_zb_ieee_addr_t *a, esp_zb_ieee_addr_t *b);
 
 
@@ -30,9 +31,9 @@ typedef struct cluster_custom_s{
 typedef struct endpoint_custom_s{
     uint8_t                                             ep_id;
     uint8_t                                             is_use_on_device;         // 0 no 1-yes
-    uint8_t                                             friendly_name_len;
-    uint8_t*                                            friendly_name;
-    //uint16_t                                            deviceId;           //esp_zb_ha_standard_devices_t
+    //char                                                friendly_name_len;
+    char                                                friendly_name[125];
+    uint16_t                                            deviceId;           //esp_zb_ha_standard_devices_t
     //uint16_t                                            owner_dev_short;
     uint8_t                                             UnKnowninputClusterCount;
     cluster_custom_t**                                  UnKnowninputClusters_array;
@@ -49,6 +50,7 @@ typedef struct endpoint_custom_s{
     zb_manager_identify_cluster_t*                      server_IdentifyClusterObj;
     uint8_t                                             is_use_temperature_measurement_cluster; // для сохранения и чтения из файла
     zb_manager_temperature_measurement_cluster_t*       server_TemperatureMeasurementClusterObj;
+    //uint8_t                                             is_temp_cluster_binded;                     // сохраняем статус бинда
 }endpoint_custom_t;
 
 typedef struct {
@@ -58,33 +60,40 @@ typedef struct {
 
 typedef struct device_custom_s{
     uint8_t                                 is_in_build_status;
-    uint8_t                                 manuf_name_len;
-    uint8_t*                                manuf_name;
+    //uint8_t                                 manuf_name_len;
+    //uint8_t*                                manuf_name;
     uint8_t                                 friendly_name_len;
-    uint8_t*                                friendly_name;
+    char                                    friendly_name[64];
     //uint8_t                                 appending_ep_data_counter;  // используется при добавлении устройств, в конфиге не хранится
     uint16_t                                short_addr;             //                                   
     esp_zb_ieee_addr_t                      ieee_addr;
     uint8_t                                 capability;
+    zigbee_manager_basic_cluster_t*         server_BasicClusterObj;
     uint8_t                                 endpoints_count;
     endpoint_custom_t**                     endpoints_array;
-    uint8_t                                 control_dev_annce_simple_desc_req_count;
-    dev_annce_simple_desc_controll_t**      control_dev_annce_simple_desc_req_array;
+    //uint8_t                                 control_dev_annce_simple_desc_req_count;
+    //dev_annce_simple_desc_controll_t**      control_dev_annce_simple_desc_req_array;
 }device_custom_t;
 
 typedef struct {
     uint8_t                                 index_in_sheduler_array;
     device_custom_t*                        appending_device;
+    esp_timer_handle_t                      appending_controll_timer;
     esp_zb_zcl_read_attr_cmd_t              tuya_magic_read_attr_cmd_param;    //
     uint8_t                                 tuya_magic_req_tsn;
     uint8_t                                 tuya_magic_resp_tsn;
     uint8_t                                 tuya_magic_status;         // 0-инициализация 1 - в процессе, 2 - готово
+    uint8_t                                 tuya_magic_try_count;
     esp_zb_zdo_active_ep_req_param_t        active_ep_req;
     uint8_t                                 active_ep_req_status;      // 0-инициализация 1 - в процессе, 2 - готово
     uint8_t                                 simple_desc_req_count;
     esp_zb_zdo_simple_desc_req_param_t*     simple_desc_req_list;
-    uint8_t*                                simple_desc_req_simple_desc_req_list_status;    // 0-инициализация 1 - в процессе, 2 - готово 
+    uint8_t*                                simple_desc_req_simple_desc_req_list_status;    // 0-инициализация 1 - в процессе, 2 - готово
+    //esp_zb_zdo_bind_req_param_t*            bind_req_list;
+    //uint8_t                                 bind_req_count;
+    //uint8_t*                                bind_req_list_status; // 0-инициализация 1 - в процессе, 2 - готово
 }device_appending_sheduler_t;
+
 
 endpoint_custom_t* RemoteDeviceEndpointCreate(uint8_t ep_id); // создаёт пустую точку 0xff далее её надо заполнить или при создании устройства или при чтении из файла
 esp_err_t RemoteDeviceEndpointDelete(endpoint_custom_t* ep_object);
@@ -97,7 +106,7 @@ extern device_custom_t** RemoteDevicesArray;
 
 extern uint8_t DeviceAppendShedulerCount;
 extern device_appending_sheduler_t** DeviceAppendShedulerArray;
-
+esp_err_t zb_manager_delete_appending_sheduler(device_appending_sheduler_t* sheduler);
 esp_err_t zb_manager_devices_init(void);
 
 typedef struct build_dev_simple_desc_user_ctx_s{

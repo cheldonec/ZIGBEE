@@ -346,7 +346,10 @@ esp_err_t esp_zb_device_register(esp_zb_ep_list_t *ep_list);
 // Определение конкретных событий
 enum {
     ATTR_REPORT_EVENT,
-    ATTR_READ_RESP,
+    ATTR_READ_RESP,                     // ответ на zm_manager_zcl_read_attr_cmd_req
+    ACTIVE_EP_RESP,                     // ответ на zb_manager_zdo_active_ep_req
+    SIMPLE_DESC_RESP,                   // ответ на zb_manager_zdo_simple_desc_req
+    BIND_RESP,                          // ответ на esp_zb_zdo_device_bind_req
     NETWORK_IS_OPEN,
     NETWORK_IS_CLOSE,
     NEW_DEVICE_JOINED,

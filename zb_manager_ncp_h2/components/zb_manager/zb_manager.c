@@ -263,6 +263,10 @@ static void ESP_ZIGBEE_Task(void *pvParameters)
         //esp_zb_core_action_handler_register(init_ctx->action_handler);
     //} else 
     //esp_zb_core_action_handler_register(zb_action_handler); // если без NCP
+    esp_zb_aps_src_binding_table_size_set(64); // таблица записей когда нас забиндили
+    esp_zb_aps_dst_binding_table_size_set(16); // bind_req->req_dst_addr = 0000 таблица когда мы биндим
+    esp_zb_io_buffer_size_set(160);
+    esp_zb_scheduler_queue_size_set(160);
     esp_zb_core_action_handler_register(esp_ncp_zb_action_handler); // NCP
     
     
@@ -296,7 +300,7 @@ static void ESP_ZIGBEE_Task(void *pvParameters)
         //esp_zb_stack_main_loop(); 
 }
 
-static void ESP_ZIGBEE_EventsTask(void *pvParameters)
+/*static void ESP_ZIGBEE_EventsTask(void *pvParameters)
 {
     zb_event_msg_t event_msg;
     ESP_LOGI(TAG, "Start ESP_ZIGBEE_EventsTask");
@@ -309,7 +313,7 @@ static void ESP_ZIGBEE_EventsTask(void *pvParameters)
         }
         vTaskDelete(NULL); 
 
-    }
+    }*/
 
 ///////////////////////////////////////////////////////////
 /*Инициализация модуля
@@ -455,8 +459,8 @@ esp_err_t zb_manager_start()
     static StaticTask_t xZBEventsTaskBuffer;
     static StackType_t xZBEventsStack[ZIGBEE_EVENTS_STACK_SIZE];
     xZBEventsTaskHandle = NULL;
-    xZBEventsTaskHandle = xTaskCreateStatic(ESP_ZIGBEE_EventsTask, "Zigbee_Events_Task", ZIGBEE_EVENTS_STACK_SIZE, NULL, 10, xZBEventsStack, &xZBEventsTaskBuffer);
-    if (xZBEventsTaskHandle == NULL) return ESP_FAIL;
+    //xZBEventsTaskHandle = xTaskCreateStatic(ESP_ZIGBEE_EventsTask, "Zigbee_Events_Task", ZIGBEE_EVENTS_STACK_SIZE, NULL, 10, xZBEventsStack, &xZBEventsTaskBuffer);
+    //if (xZBEventsTaskHandle == NULL) return ESP_FAIL;
     //assert(xZBEventsTaskHandle);
 
     //----------------------------------- Запуск основного цикла Zigbee

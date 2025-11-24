@@ -29,9 +29,9 @@ typedef enum {
  */
 #define NCP_BUS_RINGBUF_SIZE            20480
 #define NCP_BUS_RINGBUF_TIMEOUT_MS      50
-#define NCP_BUS_TASK_STACK              4096
+#define NCP_BUS_TASK_STACK              8192
 #define NCP_BUS_TASK_PRIORITY           18
-#define NCP_BUS_BUF_SIZE                1024
+#define NCP_BUS_BUF_SIZE                4096
 
 /**
  * @brief A function for bus initialize.

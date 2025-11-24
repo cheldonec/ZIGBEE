@@ -849,7 +849,11 @@ static esp_err_t esp_ncp_zb_set_bind_fn(const uint8_t *input, uint16_t inlen, ui
         if (bind_req) {
             memcpy(bind_req, input + (inlen - sizeof(esp_ncp_zb_user_cb_t)), sizeof(esp_ncp_zb_user_cb_t));
         }
-        esp_zb_zdo_device_bind_req((esp_zb_zdo_bind_req_param_t *)input, esp_ncp_zb_bind_cb, (void *)bind_req);
+        //if (esp_zb_lock_acquire(portMAX_DELAY) == ESP_OK)
+            //{
+                esp_zb_zdo_device_bind_req((esp_zb_zdo_bind_req_param_t *)input, esp_ncp_zb_bind_cb, (void *)bind_req);
+                //esp_zb_lock_release();
+            //}
     }
 
     ESP_NCP_ZB_STATUS();
@@ -1690,8 +1694,8 @@ static esp_err_t zb_manager_init_fn(const uint8_t *input, uint16_t inlen, uint8_
             s_init_flag = true;
             status = ESP_NCP_SUCCESS;
             // EP1
-            uint16_t inputClusterEP1[] = {0x0000, 0x0003};// 
-        uint16_t outputClusterEP1[] = {0x0003};// 
+            uint16_t inputClusterEP1[] = {0x0000, 0x0001, 0x0003, 0x0004, 0x0005, 0x0006, 0x0402, 0x0405};// 
+        uint16_t outputClusterEP1[] = {0x0000, 0x0001, 0x0003, 0x0004, 0x0005, 0x0006, 0x0402, 0x0405};//
         custom_zb_endpoint_add_str_t endpoint1 = {
             .inputClusterCount = sizeof(inputClusterEP1) / sizeof(inputClusterEP1[0]),
             .inputClusterList = inputClusterEP1,
@@ -1702,7 +1706,7 @@ static esp_err_t zb_manager_init_fn(const uint8_t *input, uint16_t inlen, uint8_
         zb_manager_obj.endpoints_func.generate_endpoint_func(&endpoint1,endpoint1_config);
         
         // EP2
-        uint16_t inputClusterEP2[] = {0x0001, 0x0006};// 
+        /*uint16_t inputClusterEP2[] = {0x0001, 0x0006};// 
         uint16_t outputClusterEP2[] = {0x0006};// 
         custom_zb_endpoint_add_str_t endpoint2 = {
             .inputClusterCount = sizeof(inputClusterEP2) / sizeof(inputClusterEP2[0]),
@@ -1711,7 +1715,7 @@ static esp_err_t zb_manager_init_fn(const uint8_t *input, uint16_t inlen, uint8_
             .outputClusterList = outputClusterEP2,
         };
         esp_zb_endpoint_config_t endpoint2_config = LOCAL_REMOTE_ENDPOINT2_CONFIG();
-        zb_manager_obj.endpoints_func.generate_endpoint_func(&endpoint2,endpoint2_config);
+        zb_manager_obj.endpoints_func.generate_endpoint_func(&endpoint2,endpoint2_config);*/
     
         //zb_manager_register_match_desc_cb(match_desc_callback);
         //zb_manager_register_ieee_addr_req_cb(ieee_addr_callback);

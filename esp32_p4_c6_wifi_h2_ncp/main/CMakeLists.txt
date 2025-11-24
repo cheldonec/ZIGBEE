@@ -30,6 +30,7 @@ idf_component_register(
                         "lcd_gui_prog/screens/ui_RoomsScreen.c"
                         "lcd_gui_prog/zb_gui_components/ui_ScreenComponent.c"
                         "lcd_gui_prog/zb_gui_components/ui_PanelComponent.c"
+                        "lcd_gui_prog/zb_gui_components/ui_widgets.c"
                         "lcd_gui_prog/fonts/ui_font_RobotoCyrInfoLabels.c"
 
                         "lcd_gui_prog/ui.c"

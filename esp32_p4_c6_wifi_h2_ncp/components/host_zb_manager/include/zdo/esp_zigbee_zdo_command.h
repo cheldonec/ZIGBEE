@@ -4,13 +4,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#pragma once
+//#pragma once
+#ifndef ESP_ZIGBEE_ZDO_COMMAND_H
+#define ESP_ZIGBEE_ZDO_COMMAND_H
+//#endif
 #include "esp_err.h"
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 #include "esp_zigbee_type.h"
 #include "esp_zigbee_zdo_common.h"
+//#include "zb_manager_devices.h"
 
 /* MATCH DESC REQ ZCL configuration */
 #define ESP_ZB_MATCH_DESC_REQ_TIMEOUT              (5 * ESP_ZB_TIME_ONE_SECOND)            /* timeout for finding */
@@ -192,7 +196,35 @@ const char *esp_zb_zdo_signal_to_string(esp_zb_app_signal_type_t signal);
 
 /***************************************************** ZB_MANAGER_FUNCTIONS *********************************/
 /***************************************!!!!!!!!!!!!!! zb_manager_zdo_active_ep_req только заготовка */
+
+/**
+ * @brief Структура ответа на zb_manager_zdo_active_ep_req для передачи в event 
+ */
+typedef struct zb_manager_active_ep_resp_message_s {
+        esp_zb_zdp_status_t status;
+        uint8_t ep_count; 
+        uint8_t *ep_list;    // Динамический массив endpoint'ов
+        void*   user_ctx;
+    } zb_manager_active_ep_resp_message_t;
+
+/**
+ * @brief Очищает массив ep внутри zb_manager_active_ep_resp_message_t после передачи в event, сам объект не удаляется, так как 
+ * после обработки в event он будет удалён автоматически
+ */
+void zb_manager_free_active_ep_resp_ep_array(zb_manager_active_ep_resp_message_t *resp);
+
 esp_err_t zb_manager_zdo_active_ep_req(esp_zb_zdo_active_ep_req_param_t *cmd_req, esp_zb_zdo_active_ep_callback_t user_cb, void *user_ctx);
+
+/**
+ * @brief Структура ответа на zb_manager_zdo_simple_desc_req для передачи в event 
+ */
+typedef struct {
+    esp_zb_zdp_status_t status;
+    esp_zb_af_simple_desc_1_1_t* simple_desc;
+    void* user_ctx; // Сохраняем контекст, чтобы использовать в обработчике
+} zb_manager_simple_desc_resp_message_t;
+
+void zb_manager_free_simple_desc_resp(zb_manager_simple_desc_resp_message_t* resp);
 
 /*
 esp_zb_zdo_simple_desc_req_param_t req;
@@ -202,6 +234,17 @@ esp_zb_zdo_simple_desc_req_param_t req;
 */
 esp_err_t zb_manager_zdo_simple_desc_req(esp_zb_zdo_simple_desc_req_param_t *cmd_req, esp_zb_zdo_simple_desc_callback_t user_cb, void *user_ctx);
 
-#ifdef __cplusplus
-}
+/**
+ * @brief Структура ответа на esp_zb_zdo_device_bind_req для передачи в event 
+ */
+typedef struct {
+    esp_zb_zdp_status_t status;
+    void* user_ctx;
+} zb_manager_bind_resp_message_t;
+
+
+
+void zb_manager_free_bind_resp(zb_manager_bind_resp_message_t* resp);
+//#ifdef __cplusplus
+//}
 #endif

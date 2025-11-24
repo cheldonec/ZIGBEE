@@ -53,7 +53,7 @@ static esp_err_t host_bus_init_hdl(uint8_t transport)
         .source_clk = UART_SCLK_DEFAULT,
     };
 
-    uart_driver_install(CONFIG_HOST_BUS_UART_NUM, HOST_BUS_BUF_SIZE * 2, HOST_BUS_BUF_SIZE * 2, 20, &uart0_queue, 0);
+    uart_driver_install(CONFIG_HOST_BUS_UART_NUM, HOST_BUS_BUF_SIZE * 2, HOST_BUS_BUF_SIZE * 2, 80, &uart0_queue, 0);
     uart_param_config(CONFIG_HOST_BUS_UART_NUM, &uart_config);
     uart_set_pin(CONFIG_HOST_BUS_UART_NUM, CONFIG_HOST_BUS_UART_TX_PIN, CONFIG_HOST_BUS_UART_RX_PIN, CONFIG_HOST_BUS_UART_RTS_PIN, CONFIG_HOST_BUS_UART_CTS_PIN);
 

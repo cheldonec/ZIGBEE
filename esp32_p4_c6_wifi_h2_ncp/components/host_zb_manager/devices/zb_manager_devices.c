@@ -37,6 +37,19 @@ esp_err_t zb_manager_devices_init(void)
     return ESP_OK;
 }
 
+esp_err_t zb_manager_delete_appending_sheduler(device_appending_sheduler_t* sheduler)
+{
+    if(sheduler != NULL)
+    {
+        free(sheduler->simple_desc_req_list);
+        sheduler->simple_desc_req_list = NULL;
+        free(sheduler->simple_desc_req_simple_desc_req_list_status);
+        sheduler->simple_desc_req_simple_desc_req_list_status = NULL;
+        free(sheduler);
+        sheduler = NULL;
+    }
+    return ESP_OK;
+}
 
 endpoint_custom_t* RemoteDeviceEndpointCreate(uint8_t ep_id)
 {
@@ -45,8 +58,8 @@ endpoint_custom_t* RemoteDeviceEndpointCreate(uint8_t ep_id)
     if (new_ep==NULL) return NULL;
     new_ep->ep_id = ep_id;
     new_ep->is_use_on_device = 0;
-    new_ep->friendly_name_len = 0;
-    new_ep->friendly_name = NULL;
+    //new_ep->friendly_name_len = 0;
+    //new_ep->friendly_name = NULL;
     //new_ep->deviceId = device_id;
     //new_ep->owner_dev_short = owner_dev_short;
     new_ep->UnKnowninputClusterCount = 0;
@@ -75,10 +88,10 @@ device_custom_t*   RemoteDeviceCreate(esp_zb_ieee_addr_t ieee_addr)
     if(new_dev == NULL) return NULL; //
     memcpy(new_dev->ieee_addr, ieee_addr, sizeof(esp_zb_ieee_addr_t));
     new_dev->is_in_build_status = 1;
-    new_dev->manuf_name_len = 0;
-    new_dev->manuf_name = NULL;
-    new_dev->friendly_name_len = 0;
-    new_dev->friendly_name = NULL;
+    //new_dev->manuf_name_len = 0;
+    //new_dev->manuf_name = NULL;
+    new_dev->friendly_name_len = sizeof(new_dev->friendly_name);
+    //new_dev->friendly_name = NULL;
     new_dev->short_addr = 0xffff;
     new_dev->capability = 0;
     new_dev->endpoints_count = 0;
