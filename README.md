@@ -5,6 +5,7 @@
 **ESP32-P4 + ESP32-C6 Модуль с сенсорным экраном 4.3’’**
 
 **И ESP32-H2 supermini**
+![alt text](/readme_resource/esp32-P4-C6-H2.bmp)
 
 **Ресурсы**
 
